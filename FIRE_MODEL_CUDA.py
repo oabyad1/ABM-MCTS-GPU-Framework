@@ -17,18 +17,14 @@ from matplotlib.lines import Line2D             # custom legend handles
 from rothermal_2d_wind_CK2_p import compute_landscape_ros
 # from rothermal_2d_wind_CK2_memory import compute_landscape_ros
 # from rothermal_2d_wind_CK2_DEBUG import compute_landscape_ros
-from rothermal_2d_wind_CK2_p import _get_landscape_cache      # already in env
-
+from rothermal_2d_wind_CK2_p import _get_landscape_cache
 
 def get_barrier_mask(tif_path: str, radius: int = 2) -> cp.ndarray:
     """Boolean CuPy array (True where fuel 90‑99).  Cached on first call."""
     return _get_landscape_cache(str(tif_path), radius).barrier_cp
 
 def _shift(arr: cp.ndarray, di: int, dj: int, *, fill=True) -> cp.ndarray:
-    """
-    Like numpy.roll but fills the out‑of‑bounds region with *fill*
-    instead of wrapping.  Works on GPU CuPy arrays.
-    """
+
     if di == 0 and dj == 0:
         return arr
     rows, cols = arr.shape
@@ -75,7 +71,8 @@ def apply_barrier_rules(
 
     return delays_cp
 
-#this blocked mask is beter for the marshal fire and the other one is better for camp (esperenza unknown yet)
+#this blocked mask is better for the marshal fire and the other one is better for camp (esperenza unknown yet)
+#this blocked mask tends to work better in general
 # --------------------------------------------- helpers
 def _blocked_mask(barrier_cp: cp.ndarray,
                   dirs: list[tuple[int,int]]) -> cp.ndarray:
@@ -163,100 +160,12 @@ def get_blocked_mask(tif_path: str,
     if key not in _BLOCKED_CACHE:
         _BLOCKED_CACHE[key] = _blocked_mask(barrier_cp, dirs)
     return _BLOCKED_CACHE[key]
+
+
 ########################################
 # 1) Custom Kernel for the Fire Arrival Update
 ########################################
 
-# FIRE_UPDATE_SRC = r'''
-# extern "C" __global__
-# void fire_update(
-#     const float* __restrict__ T_old,   // shape (rows*cols)
-#     float* __restrict__ T_new,         // shape (rows*cols)
-#     const float* __restrict__ delays,  // shape (n_dirs*rows*cols)
-#     const int* __restrict__ offsets,   // shape (n_dirs*2)
-#     const int  rows,
-#     const int  cols,
-#     const int  n_dirs
-# ) {
-#     // 2D global index
-#     int i = blockDim.x * blockIdx.x + threadIdx.x;
-#     int j = blockDim.y * blockIdx.y + threadIdx.y;
-#     if (i >= rows || j >= cols) return;
-#
-#     // Flattened index
-#     int idx = i * cols + j;
-#     float old_val = T_old[idx];
-#     float best_val = old_val;  // Keep track of the minimum arrival time
-#
-#     // For each direction k
-#     for(int k = 0; k < n_dirs; k++){
-#         int di = offsets[2*k + 0];
-#         int dj = offsets[2*k + 1];
-#         int ni = i + di;
-#         int nj = j + dj;
-#         // Check bounds
-#         if(ni >= 0 && ni < rows && nj >= 0 && nj < cols){
-#             // neighbor's index
-#             int n_idx = ni * cols + nj;
-#             // delays[k, ni, nj] => flattened => k*(rows*cols) + n_idx
-#             float delay_val = delays[k * rows * cols + n_idx];
-#             float cand = T_old[n_idx] + delay_val;
-#             if(cand < best_val){
-#                 best_val = cand;
-#             }
-#         }
-#     }
-#
-#     T_new[idx] = best_val;
-# }
-# ''';
-#
-# fire_update_kernel = cp.RawKernel(
-#     code=FIRE_UPDATE_SRC,
-#     name='fire_update'
-# )
-#
-# # ── CUDA kernel that ignores candidates later than time_cutoff ───────────
-# FIRE_UPDATE_CUTOFF_SRC = r'''
-# extern "C" __global__
-# void fire_update_cutoff(
-#     const float* __restrict__ T_old,     // (rows*cols)
-#     float*       __restrict__ T_new,     // (rows*cols)
-#     const float* __restrict__ delays,    // (n_dirs*rows*cols)
-#     const int*   __restrict__ offsets,   // (n_dirs*2)
-#     const int    rows,
-#     const int    cols,
-#     const int    n_dirs,
-#     const float  time_cutoff             // RELATIVE minutes
-# ){
-#     int i = blockDim.x * blockIdx.x + threadIdx.x;
-#     int j = blockDim.y * blockIdx.y + threadIdx.y;
-#     if (i >= rows || j >= cols) return;
-#
-#     int idx = i * cols + j;
-#     float best_val = T_old[idx];           // start from current value
-#
-#     for (int k = 0; k < n_dirs; ++k){
-#         int ni = i + offsets[2*k    ];
-#         int nj = j + offsets[2*k + 1];
-#         if (ni < 0 || ni >= rows || nj < 0 || nj >= cols) continue;
-#
-#         int n_idx  = ni * cols + nj;
-#         float cand = T_old[n_idx] + delays[k*rows*cols + n_idx];
-#
-#         // -- keep only candidates that arrive within this phase
-#         if (cand <= time_cutoff && cand < best_val){
-#             best_val = cand;
-#         }
-#     }
-#     T_new[idx] = best_val;
-# }
-# ''';
-#
-# fire_update_kernel_cutoff = cp.RawKernel(
-#     code=FIRE_UPDATE_CUTOFF_SRC,
-#     name='fire_update_cutoff'
-# )
 FUSED_SRC = r'''
 extern "C" __global__
 void fire_step_cutoff(
@@ -327,104 +236,7 @@ def launch_fused_step(T_in, T_out,
          np.float32(t_cutoff),
          d_diff)
     )
-#
-# def launch_fire_update_kernel(T_old, T_new, delays, offsets):
-#     """
-#     Wrap the raw kernel call in Python.
-#       T_old, T_new: (rows, cols) float32
-#       delays: (n_dirs, rows, cols) float32
-#       offsets: (n_dirs, 2) int32
-#     """
-#     rows, cols = T_old.shape
-#     n_dirs = offsets.shape[0]
-#
-#     # Flatten the arrays for kernel
-#     T_old_flat = T_old.ravel()
-#     T_new_flat = T_new.ravel()
-#     delays_flat = delays.ravel()
-#     offsets_flat = offsets.ravel()
-#
-#     # Grid/block dims
-#     block = (16, 16)  # tune if needed
-#     grid = ((rows + block[0] - 1)//block[0],
-#             (cols + block[1] - 1)//block[1])
-#
-#     fire_update_kernel(
-#         grid,
-#         block,
-#         (
-#             T_old_flat,
-#             T_new_flat,
-#             delays_flat,
-#             offsets_flat,
-#             rows,
-#             cols,
-#             n_dirs
-#         )
-#     )
-#
-#
-# def launch_fire_update_kernel_cutoff(T_old, T_new,
-#                                      delays, offsets,
-#                                      time_cutoff):
-#     rows, cols = T_old.shape
-#     n_dirs      = offsets.shape[0]
-#
-#     block = (16, 16)
-#     grid  = ((rows + block[0] - 1)//block[0],
-#              (cols + block[1] - 1)//block[1])
-#
-#     fire_update_kernel_cutoff(
-#         grid, block,
-#         (
-#             T_old.ravel(),
-#             T_new.ravel(),
-#             delays.ravel(),
-#             offsets.ravel(),
-#             rows, cols, n_dirs,
-#             np.float32(time_cutoff)
-#         )
-#     )
 
-
-########################################
-# 2) Build the Delay Stack
-########################################
-
-# def build_delay_stack(ros_array, directions_list, cell_size_ft=98.4, eps=1e-6):
-#     """
-#     Given:
-#       ros_array: shape (rows, cols, n_dirs)
-#       directions_list: list of (di, dj) of length n_dirs
-#     Return:
-#       delays: shape (n_dirs, rows, cols),
-#               where delays[k, i, j] = time (minutes) to go from cell (i,j) outward in direction k
-#       offsets: shape (n_dirs, 2) (same order as directions_list)
-#     By default cell_size_ft = 30m ~ 98.4ft.
-#     """
-#     rows, cols, n_dirs = ros_array.shape
-#     directions_arr = np.array(directions_list, dtype=np.int32)
-#     # The distance factor for each direction (e.g. sqrt(di^2 + dj^2))
-#     multipliers = [np.sqrt((di**2 + dj**2)) for (di, dj) in directions_list]
-#     multipliers_cp = cp.asarray(multipliers, dtype=cp.float32)
-#
-#     # We'll build delays on GPU
-#     ros_cp = cp.asarray(ros_array, dtype=cp.float32)
-#     delays_cp = cp.zeros((n_dirs, rows, cols), dtype=cp.float32)
-#
-#     for k in range(n_dirs):
-#         # distance in feet for direction k
-#         distance = cell_size_ft * multipliers_cp[k]
-#         # delay = distance / ros
-#         # ros_cp[..., k] has shape (rows, cols)
-#         delay_k = distance / (ros_cp[..., k] + eps)
-#         delays_cp[k, :, :] = delay_k
-#
-#     offsets_cp = cp.asarray(directions_arr, dtype=cp.int32)
-#     return delays_cp, offsets_cp
-# ---------------------------------------------------------------------
-# Vectorised GPU helper – replaces the old per-direction loop
-# ---------------------------------------------------------------------
 def build_delay_stack(ros_cp: cp.ndarray,
                       directions: list[tuple[int, int]],
                       cell_size_ft: float = 98.4,
@@ -434,11 +246,7 @@ def build_delay_stack(ros_cp: cp.ndarray,
     Convert the 3-D ROS tensor produced by `compute_landscape_ros`
     (shape: (rows, cols, n_dirs)) into a delay stack
     (shape: (n_dirs, rows, cols)) in a single broadcasted CuPy op.
-
-    Parameters are **identical** to the removed helper, so external
-    callers do not need to change.
     """
-    # ---- 1. fixed data that only depends on the neighbour set ----------
     di_dj = cp.asarray(directions, dtype=cp.int32)            # (n_dirs, 2)
     #   √(di²+dj²) gives the grid-to-grid distance multiplier
     distance_multiplier = cp.sqrt(
@@ -453,65 +261,11 @@ def build_delay_stack(ros_cp: cp.ndarray,
     distance_cp = (cell_size_ft * distance_multiplier)[:, None, None]  # (n_dirs,1,1)
     delays_cp   = distance_cp / (ros_dir_first + eps)                  # (n_dirs,H,W)
 
-    return delays_cp, di_dj        # same return types as before
+    return delays_cp, di_dj
 
 
 
-# def run_phase_gpu(
-#         tiff_path: str,
-#         grid_size: tuple[int, int],
-#         wind_speed: float,
-#         wind_dir_deg: float,
-#         iteration_limit: int,
-#         time_cutoff: float,
-#         tol: float = 1e-4,
-#         initial_T: cp.ndarray | None = None,
-#         fuel_np: np.ndarray | None = None
-#     ) -> cp.ndarray:
-#     """
-#     One propagation phase using the custom kernel + cut-off.
-#     Times are *relative* inside the phase; anything > time_cutoff
-#     is treated as ∞ and therefore cannot ignite subsequent phases.
-#     """
-#     rows, cols = grid_size
-#
-#     # 1. build delay stack for this wind
-#     ros_cp, directions = compute_landscape_ros(
-#         tiff_path,
-#         wind_speed=wind_speed,
-#         wind_direction_deg=wind_dir_deg,
-#         wind_adjustment=1.045,
-#         radius=2
-#     )
-#     delays_cp, offsets_cp = build_delay_stack(ros_cp, directions)
-#
-#     # 2. initial arrival field
-#     if initial_T is None:
-#         T_old = cp.full((rows, cols), cp.inf,  dtype=cp.float32)
-#         T_old[rows//2, cols//2] = 0.0
-#     else:
-#         T_old = initial_T.astype(cp.float32)
-#     T_new = T_old.copy()
-#
-#     # 3. burnable mask from fuel map (optional)
-#     if fuel_np is not None:
-#         fuel_cp = cp.asarray(fuel_np)
-#         burnable_mask = ~((fuel_cp >= 90) & (fuel_cp <= 99))
-#     else:
-#         burnable_mask = cp.ones((rows, cols), dtype=cp.bool_)
-#
-#     T_old[~burnable_mask] = cp.inf
-#     for it in range(iteration_limit):
-#         launch_fire_update_kernel_cutoff(
-#             T_old, T_new, delays_cp, offsets_cp,
-#             time_cutoff
-#         )
-#         diff = cp.max(cp.abs(T_new - T_old))
-#         T_old, T_new = T_new, T_old          # swap
-#         T_old[~burnable_mask] = cp.inf       # enforce mask
-#         if diff < tol:
-#             break
-#     return T_old
+
 
 def run_phase_gpu(
         tiff_path: str,
@@ -525,18 +279,22 @@ def run_phase_gpu(
         fuel_np: np.ndarray | None = None
     ) -> cp.ndarray:
     """
-    Single relative-time propagation phase, GPU-only and memory-tight.
+    Single relative-time propagation phase
 
     *   Uses one fused CUDA kernel (`fire_step_cutoff`) that
         - scans neighbours,
         - enforces the burnable mask,
         - applies the phase cut-off, **and**
         - records the max |ΔT| with an in-kernel atomic.
-    *   Converges when that device-side max error < `tol`.
     *   Returns the updated arrival-time field **in relative minutes**.
+
+    IMP:
+    Adjust the wind_adjustment based by calibrating it to each landscape
     """
     rows, cols = grid_size
-    #1.039 for three cities
+
+    #Adjust the wind_adjustment based on each landscape
+
     #1.05 for esperenze
     #1.04 for marshall
     #1.075 for camp
@@ -558,7 +316,7 @@ def run_phase_gpu(
     delays_cp = cp.where(blocked, INF, delays_cp)
 
 
-    # barrier_cp = get_barrier_mask(tiff_path)  # ← new
+    # barrier_cp = get_barrier_mask(tiff_path)
     # delays_cp = apply_barrier_rules(delays_cp, barrier_cp, directions)
     # 2 ── initial arrival map ------------------------------------------
     if initial_T is None:
@@ -600,103 +358,6 @@ def run_phase_gpu(
 
     return T_old
 
-
-########################################
-# 3) Fire Arrival Solver (iterative) using the Custom Kernel
-########################################
-
-# def run_deterministic_arrival_with_ros(
-#     tiff_path, grid_size, wind_speed, wind_direction_deg, max_iter=1000, tol=1e-4
-# ):
-#     """
-#     1. Compute the directional ROS using `compute_landscape_ros`.
-#     2. Convert the ROS to a delay stack (delay_maps).
-#     3. Iteratively update T using the custom CUDA kernel.
-#     """
-#     rows, cols = grid_size
-#
-#     # 1) Compute the directional ROS
-#     ros_array, directions_list = compute_landscape_ros(
-#         tiff_path,
-#         wind_speed=wind_speed,
-#         wind_direction_deg=wind_direction_deg,
-#         wind_adjustment=1.05,  # example multiplier
-#         radius=2
-#     )
-#     # 2) Build the delay stack => shape (n_dirs, rows, cols)
-#     #    and offsets => shape (n_dirs, 2)
-#     delays_cp, offsets_cp = build_delay_stack(ros_array, directions_list)
-#
-#     # 3) Initialize T
-#     T_old = cp.full((rows, cols), cp.inf, dtype=cp.float32)
-#     center = (rows // 2, cols // 2)
-#     T_old[center] = 0.0
-#     T_new = T_old.copy()
-#
-#     # Iterative solver
-#     for it in range(max_iter):
-#         # Launch custom kernel
-#         launch_fire_update_kernel(T_old, T_new, delays_cp, offsets_cp)
-#
-#         # Measure update magnitude
-#         diff = cp.max(cp.abs(T_new - T_old))
-#         # Swap references instead of doing T_old = T_new.copy()
-#         T_old, T_new = T_new, T_old
-#
-#         if diff < tol:
-#             print(f"Converged after {it+1} iterations. Diff={diff}")
-#             break
-#     else:
-#         print("Reached maximum iterations without full convergence.")
-#
-#     return T_old
-# def run_deterministic_arrival_with_ros(
-#     tiff_path, grid_size, wind_speed, wind_direction_deg, max_iter=1000, tol=1e-4, fuel_np=None
-# ):
-#     rows, cols = grid_size
-#
-#     # 1) Compute the directional ROS and directions_list as before.
-#     ros_array, directions_list = compute_landscape_ros(
-#         tiff_path,
-#         wind_speed=wind_speed,
-#         wind_direction_deg=wind_direction_deg,
-#         wind_adjustment=1.045,  # example multiplier; adjust as needed
-#         radius=2
-#     )
-#     delays_cp, offsets_cp = build_delay_stack(ros_array, directions_list)
-#
-#     # 2) Initialize the arrival time T
-#     T_old = cp.full((rows, cols), cp.inf, dtype=cp.float32)
-#     center = (rows // 2, cols // 2)
-#     T_old[center] = 0.0
-#
-#     # 3) Compute a burnable mask from the fuel map if provided.
-#     if fuel_np is not None:
-#         # Unburnable cells are those with fuel model IDs between 90 and 99 (inclusive)
-#         fuel_np_cp = cp.asarray(fuel_np)
-#         burnable_mask = ~((fuel_np_cp >= 90) & (fuel_np_cp <= 99))
-#     else:
-#         burnable_mask = cp.ones((rows, cols), dtype=cp.bool_)
-#
-#     # Ensure unburnable cells start with infinite arrival times.
-#     T_old[~burnable_mask] = cp.inf
-#     T_new = T_old.copy()
-#
-#     # 4) Iterative solver: launch the custom kernel and then enforce the mask after each iteration.
-#     for it in range(max_iter):
-#         launch_fire_update_kernel(T_old, T_new, delays_cp, offsets_cp)
-#         diff = cp.max(cp.abs(T_new - T_old))
-#         # Swap T_old and T_new for the next iteration
-#         T_old, T_new = T_new, T_old
-#         # Enforce that unburnable cells never update (remain at infinity)
-#         T_old[~burnable_mask] = cp.inf
-#         if diff < tol:
-#             print(f"Converged after {it+1} iterations. Diff={diff}")
-#             break
-#     else:
-#         print("Reached maximum iterations without full convergence.")
-#
-#     return T_old
 
 def run_deterministic_arrival_with_ros(
     tiff_path: str,
@@ -768,8 +429,7 @@ def run_multi_phase_arrival_with_ros(
         fuel_np: np.ndarray | None = None
     ) -> cp.ndarray:
     """
-    Identical relative-time scheme as the roth_w version, but
-    implemented with the custom kernel.
+    Implemented with the custom kernel.
     """
     rows, cols = grid_size
     T_abs = cp.full(grid_size, cp.inf, dtype=cp.float32)
@@ -821,10 +481,6 @@ def _print_schedule(label, schedule, max_rows: int = 30):
 def compute_ros_field(T_np, cell_size_ft, clip_max=100000.0):
     """
     Compute the local rate-of-spread (ROS) from the fire arrival time field T_np.
-
-    This version replaces infinite values with the maximum finite arrival time
-    for the gradient computation, then re-masks unburned regions. For visualization,
-    the ROS field is clipped to a maximum value (default: 200 ft/min).
 
     Parameters:
       T_np         : 2D NumPy array of arrival times (minutes)
@@ -886,9 +542,9 @@ def get_perimeter_ros(T_np, time_threshold, tolerance_past=1.0, tolerance_future
     perimeter_ros = np.where(mask, ros_field, np.nan)
     return perimeter_ros
 
-########################################
-# 4) SurrogateFireModelROS (uses the new solver)
-########################################
+########################################################################################################################
+# 4) SurrogateFireModelROS (essentially the new Fire Model)
+########################################################################################################################
 
 class SurrogateFireModelROS:
     """
@@ -904,7 +560,7 @@ class SurrogateFireModelROS:
             self._transform = src.transform
             landscape = src.read()  # shape: (bands, height, width)
 
-        # Assume band order: 1=Elevation, 2=Slope, 3=Aspect, 4=Fuel model
+        # Assumed band order: 1=Elevation, 2=Slope, 3=Aspect, 4=Fuel model
         self.elevation_np = landscape[0].astype(np.float32)
         self.slope_np = landscape[1].astype(np.float32)
         self.aspect_np = landscape[2].astype(np.float32)
@@ -917,14 +573,12 @@ class SurrogateFireModelROS:
         else:
             self.built_char_np = None
 
-        # ── NEW: keep a CuPy copy once, so later calls never re-upload ──
         self._built_char_cp = (
             cp.asarray(self.built_char_np, dtype=cp.int32)
             if self.built_char_np is not None else None
         )
 
 
-        # ── optional override supplied by the caller ─────────────────────────
         if fuel_model_override is not None:
             if fuel_model_override.shape != self.fuel_np.shape:
                 raise ValueError("fuel_model_override has the wrong shape "
@@ -951,7 +605,8 @@ class SurrogateFireModelROS:
         self.max_iter = max_iter
         self.tol = tol
         self.wind_schedule = wind_schedule
-        # Solve for arrival times with our new custom-kernel approach
+
+        # Solve for arrival times with novel custom-kernel approach
         self._compute_arrival_map()
 
         # For compatibility:
@@ -1014,7 +669,7 @@ class SurrogateFireModelROS:
     def current_fire(self, time, max_time=None):
         """
         Return an array in which cells with arrival times <= time are 0 (burned),
-        else keep arrival time, optionally mask out those above max_time with NaN.
+        else keep arrival time
         """
         T_np = cp.asnumpy(self.T)
         fire_state = T_np.copy()
@@ -1062,9 +717,7 @@ class SurrogateFireModelROS:
         built  = cp.asarray(self.built_char_np >= 11)
         return int(cp.sum(burned & built).get())
 
-        # ────────────────────────────────────────────────────────────────
-        #  Fast per-code building breakdown  {11..25 → count}
-        # ────────────────────────────────────────────────────────────────
+
     def calculate_building_breakdown(self, time_threshold: float) -> dict[int, int]:
         """
         GPU-side tally of every settlement-code ≥ 11 that burns by *time_threshold*.
@@ -1393,7 +1046,6 @@ def main():
     angle_ranges = [(i, i + 5) for i in range(0, 360, 5)]
 
     # Aggregate the ROS on the perimeter using a specific time threshold.
-    # (Adjust time_threshold and tolerance based on your simulation.)
 
     tolerance = 10  # ±10 minutes tolerance.
     tolerance_past = 5
@@ -1411,7 +1063,6 @@ def main():
     tolerance = 10  # ±10 minutes tolerance.
     cell_size_ft = 98.4  # Given cell dimension.
     # Plot the aggregated ROS overlaid on the fire perimeter.
-    # (Make sure the function plot_aggregated_ros_on_perimeter is imported or defined.)
     # Now call the function to plot the colored perimeter by sector.
     plot_colored_perimeter_by_sector(model, time_threshold, tolerance_past=tolerance_past,
                                      tolerance_future=tolerance_future, cell_size_ft=cell_size_ft)
@@ -1465,180 +1116,3 @@ if __name__ == "__main__":
     import pstats
 
     cProfile.run("main()", "profile_fm.out")
-
-#     tif_path = "testslope.tif"
-#     wind_speed = 10
-#     wind_dir_deg = 180
-#     max_iter = 200
-#     tol = 1e-4
-#     sim_time = 100
-#
-#     tif_path = "testslope.tif"  # Replace with your actual TIFF file path
-#     sim_time = 2000  # Total simulation time in minutes
-#     phase_duration = 120  # Duration of each phase in minutes
-#     num_phases = sim_time // phase_duration  # Total number of phases
-#
-#     # Set fixed wind speed to 10 mph for all phases.
-#     fixed_wind_speed = 10
-#
-#     # Create wind schedule: first half of phases with wind_direction = 270, second half with wind_direction = 90.
-#     first_half = num_phases // 2
-#     wind_schedule = []
-#     for i in range(num_phases):
-#         t_start = i * phase_duration
-#         t_end = (i + 1) * phase_duration
-#         if i < first_half:
-#             wd = 180
-#         else:
-#             wd = 0
-#         wind_schedule.append((t_start, t_end, fixed_wind_speed, wd))
-#
-#     print("Wind schedule:")
-#     for seg in wind_schedule:
-#         print(f"  t = {seg[0]} to {seg[1]}: wind_speed = {seg[2]} mph, wind_direction = {seg[3]}°")
-#
-#     t_start = time.time()
-#     surrogate = SurrogateFireModelROS(
-#         tif_path=tif_path,
-#         sim_time=sim_time,
-#         wind_speed=wind_speed,
-#         wind_direction_deg=wind_dir_deg,
-#         max_iter=max_iter,
-#         tol=tol,
-#         wind_schedule=None,
-#     )
-#     cp.cuda.Stream.null.synchronize()
-#     elapsed = time.time() - t_start
-#     print(f"Simulation took {elapsed:.3f} seconds.")
-#
-#
-#     # Plot
-#     T_np = cp.asnumpy(surrogate.T)
-#     with rasterio.open(tif_path) as src:
-#         extent = (src.bounds.left, src.bounds.right, src.bounds.bottom, src.bounds.top)
-#
-#     plt.figure()
-#     plt.imshow(T_np, cmap='viridis', extent=extent, origin='upper')
-#     plt.colorbar(label='Arrival Time (min)')
-#     plt.title("Deterministic Fire Arrival Times (Custom Kernel)")
-#     plt.show()
-#
-# # Plot burned area based on a time threshold
-#     time_threshold = 2000
-#     final_state = np.zeros(surrogate.grid_size, dtype=np.int32)
-#     final_state[T_np < time_threshold] = 2
-#     plt.figure(figsize=(6, 6))
-#     plt.imshow(final_state, cmap='hot', extent=extent, origin='upper')
-#     plt.title(f"Deterministic Burned Area at t = {time_threshold}")
-#     plt.xlabel("Longitude")
-#     plt.ylabel("Latitude")
-#     plt.colorbar(label="State (0: unburned, 2: burned)")
-#     plt.show()
-#
-#     # Mask arrival times above the threshold.
-#     thresholded_arrival = surrogate.current_fire(0, max_time=2000)
-#     plt.figure(figsize=(6, 6))
-#     plt.imshow(thresholded_arrival, cmap='viridis', extent=extent, origin='upper')
-#     plt.colorbar(label='Arrival Time (min)')
-#     plt.title(f"Fire Arrival Times (Thresholded at t = {time_threshold})")
-#     plt.xlabel("Longitude")
-#     plt.ylabel("Latitude")
-#     plt.show()
-#
-#     # Example: compute fire score for a given time threshold.
-#     time_threshold_score = 100
-#     fire_score = surrogate.calculate_fire_score(time_threshold_score)
-#     print(f"Number of burning cells (arrival time <= {time_threshold_score}): {fire_score}")
-#
-#     # ------------------------
-#     # Plotting Section
-#     # ------------------------
-#     # # 1) Arrival Time Map
-#     # with rasterio.open(tif_path) as src:
-#     #     extent = (src.bounds.left, src.bounds.right,
-#     #               src.bounds.bottom, src.bounds.top)
-#
-#     ##################################################################################
-#     # ROS STUFF
-#     ##################################################################################
-#     cell_size_ft = 98.4  # given cell dimension
-#     time_threshold = 2000  # example threshold (minutes) for the perimeter
-#     tolerance_past = 30
-#     tolerance_future = 200
-#     # Compute the complete ROS field from the arrival times
-#     ros_field = compute_ros_field(T_np, cell_size_ft)
-#     # Compute the perimeter ROS (cells within ±1 minute of the threshold)
-#     perimeter_ros = get_perimeter_ros(T_np, time_threshold, tolerance_past=tolerance_past,
-#                                       tolerance_future=tolerance_future, cell_size_ft=cell_size_ft)
-#     burned = T_np[np.isfinite(T_np)]
-#     print("Arrival time stats for burned regions:")
-#     print("Min:", burned.min(), "Max:", burned.max())
-#     print("Mean:", burned.mean())
-#     print("Median:", np.percentile(burned, 50))
-#
-#     # Debug: Print some statistics of the computed ROS field
-#     finite_ros = ros_field[np.isfinite(ros_field)]
-#     print("ROS Field stats (ft/min):")
-#     print("  Min =", finite_ros.min())
-#     print("  Max =", finite_ros.max())
-#     print("  Mean =", finite_ros.mean())
-#     # Plotting the full ROS field
-#     plt.figure(figsize=(6, 6))
-#     vmax_ros = np.nanpercentile(ros_field, 99)  # clip out top 1% outliers
-#     plt.imshow(ros_field, cmap='inferno', extent=extent, origin='upper', vmin=0, vmax=vmax_ros)
-#
-#     # plt.imshow(ros_field, cmap='inferno', extent=extent, origin='upper')
-#     plt.colorbar(label='ROS (ft/min)')
-#     plt.title("Local Rate-of-Spread Field")
-#     plt.xlabel("X Coordinate (m)")
-#     plt.ylabel("Y Coordinate (m)")
-#     # plt.show()
-#     plt.savefig("local_ros_field.png", dpi=300, bbox_inches='tight')
-#
-#     # Plotting only the fire perimeter ROS
-#     plt.figure(figsize=(6, 6))
-#     vmax_perim = np.nanpercentile(perimeter_ros, 99)  # clip out top 1% for perimeter
-#     plt.imshow(perimeter_ros, cmap='inferno', extent=extent, origin='upper', vmin=0, vmax=vmax_perim)
-#     # plt.imshow(perimeter_ros, cmap='inferno', extent=extent, origin='upper')
-#     plt.colorbar(label='Perimeter ROS (ft/min)')
-#     plt.title(f"Fire Perimeter ROS at t = {time_threshold} min\n(Future Buffer: +{tolerance_future} min)")
-#
-#     plt.xlabel("X Coordinate (m)")
-#     plt.ylabel("Y Coordinate (m)")
-#     # plt.show()
-#     plt.savefig("perimeter_ros_field.png", dpi=300, bbox_inches='tight')
-#
-#     # angle_ranges = [(0, 5), (5, 10), (10, 15), (15, 20)]
-#     angle_ranges = [(i, i + 5) for i in range(0, 360, 5)]
-#
-#     # Aggregate the ROS on the perimeter using a specific time threshold.
-#     # (Adjust time_threshold and tolerance based on your simulation.)
-#
-#     tolerance = 10  # ±10 minutes tolerance.
-#     tolerance_past = 5
-#     tolerance_future = 10
-#
-#     aggregated_ros = surrogate.aggregate_perimeter_ros_by_increments(
-#         angle_ranges=angle_ranges,
-#         statistic='mean',
-#         time_threshold=time_threshold,
-#         tolerance_past=tolerance_past,
-#         tolerance_future=tolerance_future,
-#         cell_size_ft=98.4
-#     )
-#     print("Aggregated ROS by Angle Ranges:", aggregated_ros)
-#     tolerance = 10  # ±10 minutes tolerance.
-#     cell_size_ft = 98.4  # Given cell dimension.
-#     # Plot the aggregated ROS overlaid on the fire perimeter.
-#     # (Make sure the function plot_aggregated_ros_on_perimeter is imported or defined.)
-#     # Now call the function to plot the colored perimeter by sector.
-#     plot_colored_perimeter_by_sector(surrogate, time_threshold, tolerance_past=tolerance_past,
-#                                      tolerance_future=tolerance_future, cell_size_ft=cell_size_ft)
-#
-#
-# import cProfile
-# import pstats
-#
-# if __name__ == "__main__":
-#     # Run and record the profile to profile.out
-#     cProfile.run("main()", "profileCK_new.out")
