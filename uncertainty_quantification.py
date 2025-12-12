@@ -56,12 +56,12 @@ CASES = [
     #      SIM_MIN=3000),
 
     # dict(name="Marshall Medium Uncertainty",
-    #      SCHEDULE_CSV="wind_schedule_marshall_med_two.csv",
+    #      SCHEDULE_CSV="wind_schedule_marshall_med.csv",
     #      TIF_PATH="marshall_enhanced.tif",
     #      SIM_MIN=1200),
     #
     # dict(name="Marshall High Uncertainty",
-    #      SCHEDULE_CSV="wind_schedule_marshall_two.csv",
+    #      SCHEDULE_CSV="wind_schedule_marshall_high.csv",
     #      TIF_PATH="marshall_enhanced.tif",
     #      SIM_MIN=1200),
 ]
