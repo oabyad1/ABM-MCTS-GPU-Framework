@@ -1,3 +1,10 @@
+"""
+The integrated GPU-based firespread model
+"""
+
+
+
+
 #!/usr/bin/env python3
 import cupy as cp
 import numpy as np
