@@ -1,0 +1,28 @@
+############################################
+# Start: ignore EVERYTHING by default
+############################################
+*
+
+# Allow folders so Git can traverse into them
+!*/
+
+############################################
+# Keep these tracked (minimal repo)
+############################################
+!.gitignore
+!README.md
+!requirements.txt
+
+# The only two Python scripts you want in the repo right now
+!FIRE_MODEL_CUDA.py
+!rothermal_2d_wind_CK2_p.py
+
+############################################
+# (Optional) still ignore common IDE/venv junk
+# (Not strictly necessary since we ignored everything,
+# but keeps intent clear if you later relax rules)
+############################################
+.idea/
+.venv/
+__pycache__/
+*.pyc
