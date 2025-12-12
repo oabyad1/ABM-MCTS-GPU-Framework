@@ -14,10 +14,10 @@ from matplotlib.lines import Line2D             # custom legend handles
 
 # Import your new ROS function that returns (ros_array, directions_list)
 # from rothermal_2d_wind_CK import compute_landscape_ros
-from rothermal_2d_wind_CK2_p import compute_landscape_ros
+from rothermal_ROS_kernel import compute_landscape_ros
 # from rothermal_2d_wind_CK2_memory import compute_landscape_ros
 # from rothermal_2d_wind_CK2_DEBUG import compute_landscape_ros
-from rothermal_2d_wind_CK2_p import _get_landscape_cache
+from rothermal_ROS_kernel import _get_landscape_cache
 
 def get_barrier_mask(tif_path: str, radius: int = 2) -> cp.ndarray:
     """Boolean CuPy array (True where fuel 90‑99).  Cached on first call."""
