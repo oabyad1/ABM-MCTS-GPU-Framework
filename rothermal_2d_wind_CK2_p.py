@@ -1,8 +1,8 @@
-#!/usr/bin/env python3
 """
-rothermal_2d_wind_CK.py
+This script is required to run FIRE_MODEL_CUDA, it calculates the rate of spread tensor
 
-A "mega-kernel" version of the Rothermel calculation + multi-direction logic,
+
+Essentially a custom kernel version of the Rothermel calculation + multi-direction logic,
 all in one CuPy RawKernel.
 """
 import cupy as cp
