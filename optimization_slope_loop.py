@@ -2,6 +2,9 @@
 This script was used to vary the slope factor to minimize discrepancies between fires on landscapes with identical fuel models that are
 run in FARSITE and the GPU model
 
+USE slope_preprocessing.py to generate the landscapes with the constant fuel model across the landscape
+These landscapes are necessary for this calibration
+
 """
 
 
