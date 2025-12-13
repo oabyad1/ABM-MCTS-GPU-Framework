@@ -60,7 +60,6 @@ colors = ["#1F4E79", "#D95F02"]
 # EXCLUDE_RUNS: set[int] = {9}   # esper high
 # EXCLUDE_RUNS: set[int] = {43,49,91,     92,93,94,95,96,97}   # marshall med only up to 91 bd
 # EXCLUDE_RUNS: set[int] = {0,105,110,12,36,53,94,9,46, 91,92,93,95}   # marshall high  only up to 46 bd
-# Optional: exclude specific (run,seed) pairs if you ever need to
 
 # Exclusions for specific datasets (optional)
 # EXCLUDE_RUNS = {
