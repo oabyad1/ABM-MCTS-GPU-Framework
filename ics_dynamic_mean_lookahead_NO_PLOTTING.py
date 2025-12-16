@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 ics_dynamic_mean_lookahead_NO_PLOTTING.py
 ──────────────────────────────────────────────────────────────────────────────
@@ -15,7 +13,7 @@ At every allocation boundary (every DECISION_INTERVAL minutes) we:
 Why?  This mimics an ICS planner that always works one step ahead,
 anticipating where the head will have shifted *at the end* of the slice.
 
-Launch with:  `python ics_dynamic_mean_lookahead_NO_PLOTTING.py`
+
 """
 
 # ───────────────────────────────────────────────────────────────
@@ -68,7 +66,7 @@ def _draw_for_assets(rng, open_set, weights, n):
     return [int(s)+1 for s in picks]
 
 # ───────────────────────────────────────────────────────────────
-# LOOK-AHEAD wind helper  ← **NEW LOGIC**
+# LOOK-AHEAD wind helper
 # ───────────────────────────────────────────────────────────────
 def _future_wind_direction(model) -> float:
     """

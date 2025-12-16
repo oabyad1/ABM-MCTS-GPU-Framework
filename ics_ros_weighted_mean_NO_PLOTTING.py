@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 ics_ros_weighted_mean_NO_PLOTTING.py
 ──────────────────────────────────────────────────────────────────────────────
@@ -19,7 +17,7 @@ Key points
 •  Airtankers receive probability weights ∝ ROS; ground-crews get a deterministic
    ranking by descending ROS.
 
-Launch with:  `python ics_ros_weighted_mean_NO_PLOTTING.py`
+
 """
 
 # ───────────────────────────────────────────────────────────────
@@ -270,7 +268,7 @@ def main():
         fuel_model_override=None
     )
 
-    # OPTIONAL – save initial & final PNGs for quick sanity check
+    # OPTIONAL – save initial & final PNGs
     def _snap(tag):
         fig, ax = plot_fire(model.fire, time=model.time,
                             max_time=model.fire_spread_sim_time)

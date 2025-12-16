@@ -1,12 +1,7 @@
-#!/usr/bin/env python
+
 """
 dashboard_ics_dynamic_headless.py – deterministic ICS baseline (command‐line version)
 
-Compared with the original dashboard_ics_dynamic.py the Panel/UI elements
-have been removed. This script builds a WildfireModel with default parameters
-and runs a headless simulation loop that applies dynamic ICS allocation.
-
-Launch with:  python dashboard_ics_dynamic_headless.py
 """
 
 import time as t
@@ -281,7 +276,7 @@ def simulation_loop_ics(model):
 
         if model.time >= next_decision_time:
             # open_secs = [s for s in range(4) if not model.is_sector_contained(s)]
-            # NEW
+
             num_sectors = getattr(model, "num_sectors",
                                   len(getattr(model, "sector_angle_ranges", [])) or 4)
             open_secs = [s for s in range(num_sectors) if not model.is_sector_contained(s)]

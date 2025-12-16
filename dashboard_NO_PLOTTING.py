@@ -1,6 +1,5 @@
-#!/usr/bin/env python
 """
-DOE simulation script (headless version)
+DOE simulation script with no plotting enabled
 
 This version removes all Panel/Plotly user-interface and plotting code,
 but keeps the original simulation/MCTS/forecast behavior intact.
@@ -264,7 +263,7 @@ def simulation_loop(model: WildfireModel):
 
             # open_sectors = [s for s in range(4) if not model.is_sector_contained(s)]
 
-            # NEW: derive sector count from the model
+            # derive sector count from the model
             num_sectors = getattr(model, "num_sectors", len(getattr(model, "sector_angle_ranges", [])) or 4)
             open_sectors = [s for s in range(num_sectors) if not model.is_sector_contained(s)]
             if not open_sectors:

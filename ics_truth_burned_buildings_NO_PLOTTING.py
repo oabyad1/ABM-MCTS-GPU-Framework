@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 """
 ics_truth_burned_buildings_NO_PLOTTING.py
 ──────────────────────────────────────────────────────────────────────────────

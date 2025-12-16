@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+
 """
-ics_ros_weighted_headless.py – ROS-weighted “greedy” baseline (headless version)
+ics_ros_weighted_headless.py – ROS-weighted “greedy” baseline
 
 • Airtankers are allocated proportionally to the current perimeter ROS of every still‐open sector:
       weight_s = ROS_s / (Σ ROS_open)
 • Ground-crews are assigned deterministically in descending order of ROS.
 • All UI/dashboard functionality has been removed so that the simulation runs from the command line.
 
-Launch with:  python ics_ros_weighted_headless.py
+
 """
 
 import numpy as np

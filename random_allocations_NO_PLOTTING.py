@@ -61,7 +61,7 @@ def simulation_loop_random(model):
         if model.time >= next_decision_time:
             # open_secs = [s for s in range(4) if not model.is_sector_contained(s)]
 
-            # NEW
+
             num_sectors = getattr(model, "num_sectors",
                                   len(getattr(model, "sector_angle_ranges", [])) or 4)
             open_secs = [s for s in range(num_sectors) if not model.is_sector_contained(s)]

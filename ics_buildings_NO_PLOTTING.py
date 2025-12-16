@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 """
 dashboard_ics_buildings_headless.py – building-priority ICS (command-line)
 

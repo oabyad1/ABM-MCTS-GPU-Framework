@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 ics_dynamic_mean_NO_PLOTTING.py
 ──────────────────────────────────────────────────────────────────────────────
@@ -15,7 +13,7 @@ schedule provided at construction.
      2. The main simulation loop refreshes that forecast DataFrame at every
         decision slice.
 
-Launch with:  `python ics_dynamic_mean_NO_PLOTTING.py`
+
 """
 
 # ───────────────────────────────────────────────────────────────
@@ -31,7 +29,7 @@ from mcts import simulate_in_place, ordinal_map
 DECISION_INTERVAL = 120        # minutes between allocation rounds
 
 # ───────────────────────────────────────────────────────────────
-# Helper functions (mostly unchanged from the baseline script)
+# Helper functions
 # ───────────────────────────────────────────────────────────────
 def _sectors_for_angle(angle_deg, sector_ranges, *, eps=1e-6):
     angle_deg %= 360
@@ -72,7 +70,7 @@ def _draw_for_assets(rng, open_set, weights, n):
     return [int(s) + 1 for s in picks]
 
 # ───────────────────────────────────────────────────────────────
-# Forecast-aware wind helper  **(THIS IS THE KEY CHANGE!)**
+# Forecast-aware wind helper
 # ───────────────────────────────────────────────────────────────
 def _latest_wind_direction(model) -> float:
     """
@@ -99,7 +97,7 @@ def _latest_wind_direction(model) -> float:
     return float(model.wind_schedule[-1][3])
 
 # ───────────────────────────────────────────────────────────────
-# Angle→sector helpers & allocator (unchanged logic, new wind)
+# Angle→sector helpers & allocator
 # ───────────────────────────────────────────────────────────────
 def _angle_to_sector(angle_deg, sector_ranges):
     angle_deg %= 360
@@ -230,7 +228,7 @@ def simulation_loop(model):
     print("Simulation complete.")
 
 # ───────────────────────────────────────────────────────────────
-# Build model & run (headless)
+# Build model & run
 # ───────────────────────────────────────────────────────────────
 def main():
     print("Starting ICS-MEAN simulation (headless)…")

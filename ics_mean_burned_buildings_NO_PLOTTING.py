@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+
 """
 ics_mean_burned_buildings_NO_PLOTTING.py
 ──────────────────────────────────────────────────────────────────────────────
@@ -309,7 +309,7 @@ def simulation_loop(model):
 
 
 # ───────────────────────────────────────────────────────────────
-# Main (wrapped by run_all_strategies_batch.py)
+# Main
 # ───────────────────────────────────────────────────────────────
 def main():
     print("Starting STRICT-MEAN-burned-buildings ICS simulation (headless)…")

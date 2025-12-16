@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+
 """
 ics_dynamic_truth_lookahead_NO_PLOTTING.py
 ──────────────────────────────────────────────────────────────────────────────
@@ -12,7 +11,7 @@ flank / heel will be**.
    coming slice.
 •  Ground-crew and airtanker budgets / priorities are unchanged.
 
-Launch with:  `python ics_dynamic_truth_lookahead_NO_PLOTTING.py`
+
 """
 
 # ───────────────────────────────────────────────────────────────
@@ -28,9 +27,7 @@ from mcts import simulate_in_place, ordinal_map
 DECISION_INTERVAL = 120      # minutes per allocation slice
 LOOKAHEAD         = DECISION_INTERVAL  # horizon we peek into
 
-# ───────────────────────────────────────────────────────────────
-# Shared helpers (unchanged from other variants)
-# ───────────────────────────────────────────────────────────────
+
 def _sectors_for_angle(angle_deg, sector_ranges, *, eps=1e-6):
     angle_deg %= 360
     return ([idx for idx, (lo, hi) in enumerate(sector_ranges)
