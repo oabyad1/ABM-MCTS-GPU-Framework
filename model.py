@@ -56,7 +56,7 @@ from groundcrew import (
 
 # --- ground‐crew boundary buffering knobs (minutes of radial spread) ----------
 GC_START_BUFFER_MIN        = 500.0    # modest outward push for shared START
-GC_START_SAFETY_MIN        = 120       # NEW: start = travel_time + this
+GC_START_SAFETY_MIN        = 120       # start = travel_time + this
 
 GC_FINISH_PROBE_MIN        = 400.0    # initial probe when sizing FINISH
 GC_FINISH_CLEAR_THRESH_MIN = 600.0    # if rough clear time > thresh → enlarge
@@ -127,7 +127,7 @@ class WildfireModel(mesa.Model):
         self.GC_FINISH_CLEAR_THRESH_MIN = GC_FINISH_CLEAR_THRESH_MIN
         self.GC_FINISH_SAFETY_MIN = GC_FINISH_SAFETY_MIN
         self.GC_CLEAR_RATE_MULTIPLIER = GC_CLEAR_RATE_MULTIPLIER
-        self.GC_START_SAFETY_MIN = GC_START_SAFETY_MIN  # NEW
+        self.GC_START_SAFETY_MIN = GC_START_SAFETY_MIN
 
         self.groundcrew_count = groundcrew_count
         self.groundcrew_speed = groundcrew_speed
@@ -150,8 +150,8 @@ class WildfireModel(mesa.Model):
         self.elapsed_minutes = elapsed_minutes
 
 
-        # Initialize the surrogate fire model.
-        # self.fire = self.initialize_fire()
+        # Initialize the fire model.
+
         self.fire = self.initialize_fire(fuel_model_override)
 
         self.containment = False
@@ -166,8 +166,8 @@ class WildfireModel(mesa.Model):
         self.drop_number = 1
 
         # ── model-wide bookkeeping ───────────────────────────────────
-        self.contained_sectors: set[int] = set()      # ← NEW
-        self.retarded_sectors: set[int] = set()  # aircraft drops  ← NEW
+        self.contained_sectors: set[int] = set()
+        self.retarded_sectors: set[int] = set()  # aircraft drops
 
         self._pair_sync_done = False
         self._pair_sync_list = []
@@ -641,7 +641,7 @@ class WildfireModel(mesa.Model):
 
     # def update_sector_splits(self):
     #     # On the very first call, fixed_center doesn’t exist yet,
-    #     # so fall back to your old compute to get it:
+    #
     #     if not hasattr(self, "fixed_center"):
     #         sector_angle_ranges, sector_boundaries, center, max_distance = \
     #             self.compute_sector_splits(self.time, num_sectors=4)
@@ -705,7 +705,7 @@ class WildfireModel(mesa.Model):
         #     max_iter=250,
         #     tol=1e-4,
         #     wind_schedule=self.wind_schedule,
-        #     fuel_model_override=fuel_model_override,  # ← NEW
+        #     fuel_model_override=fuel_model_override,
         # )
 
         return SurrogateFireModelROS(
@@ -716,7 +716,7 @@ class WildfireModel(mesa.Model):
             max_iter=60,
             tol=1e-4,
             wind_schedule=self.wind_schedule,
-            fuel_model_override=fuel_model_override,  # ← NEW
+            fuel_model_override=fuel_model_override,
         )
 
 
@@ -838,7 +838,7 @@ class WildfireModel(mesa.Model):
         #         )
         #     )
         #
-        # # ← NEW: Plot ground‐crew agents as lime “×” markers
+        # Plot ground‐crew agents as lime “×” markers
         # for agent in self.schedule.agents:
         #     if isinstance(agent, GroundCrewAgent):
         #         self.plot_fig.add_trace(
@@ -1107,7 +1107,7 @@ class WildfireModel(mesa.Model):
     def _recompute_boundaries_from_fixed_center(self, time):
         """Return (sector_boundaries, max_distance) for current fire shape,
            but always from self.fixed_center & self.fixed_angle_ranges."""
-        # pull in your Point class
+
         from collections import namedtuple
         Point = namedtuple("Point", ["x", "y"])
 
@@ -1161,7 +1161,7 @@ class WildfireModel(mesa.Model):
                     and not getattr(agent, "replan_disabled", False)):   # ← new guard
                 agent.recalc_path_from_here()
 
-    # in your model class
+
     def flush_all_groundcrews_no_rerun(self) -> int:
         from groundcrew import GroundCrewAgent
         total = 0
@@ -1407,7 +1407,7 @@ class WildfireModel(mesa.Model):
                     agent.assign_to_sector(new_sector)  # ← one-liner, done
                     print( f">>> GC#{agent.unique_id:02d} reassigned from standby to sector {new_sector} (using second mapping)")
 
-        # # NEW: If second_groundcrew_sector_mapping is provided, reassign Standby agents.
+        # If second_groundcrew_sector_mapping is provided, reassign Standby agents.
         # if self.second_groundcrew_sector_mapping is not None:
         #     for agent in self.schedule.agents:
         #         from groundcrew import GroundCrewAgent
@@ -1476,64 +1476,6 @@ class WildfireModel(mesa.Model):
             self.plot_fire()
         else:
             self.update_sector_splits()
-        # every 60 minutes, run fireline for sector 0
-        #UNCOMMENRT TO RUN FIRELINE
-        # if self.time % 60 == 0:
-        #     # 1) grab the grids
-        #     # mtt = self.fire.arrival_time_grid  # <-- make sure your surrogate exposes this!
-        #     raw_mtt = self.fire.arrival_time_grid
-        #     mtt_shifted = raw_mtt - self.time
-        #     # clamp at 0, but keep NaNs where they were
-        #     mtt = np.where(
-        #         np.isnan(raw_mtt),
-        #         np.nan,
-        #         np.clip(mtt_shifted, 0, None)
-        #         )
-        #
-        #     fuel = self.fire.fuel_model.astype(int)
-        #     feas_path = "feasibility_1.csv"
-        #     feasibility = np.loadtxt(feas_path, delimiter=",", dtype=bool)
-        #
-        #     # # 2) sector info
-        #     # center = Point(self.sector_center.x, self.sector_center.y)
-        #     # boundary = Point(*self.sector_boundaries[0])  # sector 1
-        #     # angle = self.sector_angle_ranges[0]
-        #     # transform = (self.fire.transform[0], -self.fire.transform[4])
-        #     # bounds = (self.fire.bounds.left, self.fire.bounds.top)
-        #     #
-        #     # # 3) compute & plot
-        #     # fr, fb = compute_fireline_for_sector(
-        #     #     mtt, fuel, feasibility,
-        #     #     center, boundary, angle,
-        #     #     transform, bounds,
-        #     #     buffer_dist=5000,  # e.g. 2 km
-        #     # )
-        #     center = Point(self.sector_center.x, self.sector_center.y)
-        #     # pass BOTH boundary points as a tuple
-        #     boundaries = (
-        #         Point(*self.sector_boundaries[0]),
-        #         Point(*self.sector_boundaries[1])
-        #     )
-        #     angle = self.sector_angle_ranges[0]
-        #     transform = (self.fire.transform[0], -self.fire.transform[4])
-        #     bounds = (self.fire.bounds.left, self.fire.bounds.top)
-        #
-        #     # 3) compute & plot
-        #     fr = compute_fireline_for_sector(
-        #         mtt,
-        #         fuel,
-        #         feasibility,
-        #         center,
-        #         boundaries,  # <- two‐element tuple now
-        #         angle,
-        #         transform,
-        #         bounds,
-        #         buffer_dist=1000,
-        #     )
-        #     # 4) save the figure
-        #     fig = plt.gcf()
-        #     fig.savefig(self.case_folder / f"fireline_sector0_{int(self.time)}.png", dpi=300, bbox_inches='tight')
-        #
-        #     plt.close(fig)
+
         return True
 

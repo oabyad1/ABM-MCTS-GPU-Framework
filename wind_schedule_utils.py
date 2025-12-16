@@ -1,11 +1,12 @@
-# wind_schedule_utils.py
+
 """
 Convert wind_schedule.csv into the list of
-(t_start, t_end, speed, direction) tuples expected by the surrogate model.
+(t_start, t_end, speed, direction) tuples expected by the fire model.
 """
 import numpy as np
 import pandas as pd
-from typing import List, Tuple   # ← add this line
+from typing import List, Tuple
+
 # def load_wind_schedule_from_csv(path="wind_schedule.csv", seed=None):
 #     """
 #     Read wind_schedule.csv and return a list of
@@ -55,7 +56,6 @@ def sample_schedule_from_forecast(forecast_df: pd.DataFrame, seed=None):
     return out
 
 
-# ─── ADD THIS NEW HELPER ────────────────────────────────────────────
 def sample_future_schedule(forecast_df: pd.DataFrame,
                            current_minute: int,
                            *, rng: np.random.Generator) -> list[tuple]:
@@ -88,7 +88,6 @@ def _angular_diff(a: float, b: float) -> float:
     d = (a - b + 180) % 360 - 180
     return abs(d)
 
-# wind_schedule_utils.py  (replace the current helper)
 def load_wind_schedule_from_csv_random(path="wind_schedule.csv", *, seed=None):
     """
     Return list[(start, end, speed, dir)].

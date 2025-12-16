@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
 Main purpose of this script is to visualize the uncertainty
 
@@ -73,14 +72,10 @@ TOL           = 1e-3
 OUT_ROOT      = "final_out_uncertainty_esper"
 INCLUDE_GALLERY = False   # galleries for 40 runs can be large; toggle as needed
 
-# ───────────────────────────────────────────────
-# Import fire model
-# ───────────────────────────────────────────────
+
 from FIRE_MODEL_CUDA import SurrogateFireModelROS  # , compute_ros_field
 
-# ───────────────────────────────────────────────
-# Helpers
-# ───────────────────────────────────────────────
+
 def sample_truth_schedule(csv_path, rng):
     """Sample one truth schedule by perturbing each row’s mean with Normal noise."""
     df = pd.read_csv(csv_path)
@@ -167,9 +162,7 @@ def compute_summary_stats(x):
         mx=float(np.max(x))
     )
 
-# ───────────────────────────────────────────────
-# Plotting helpers
-# ───────────────────────────────────────────────
+
 def plot_case_distributions(df_case, case_name, out_dir):
     out_dir.mkdir(parents=True, exist_ok=True)
     # Violin+box for area and buildings
@@ -325,9 +318,7 @@ def _plot_hist_with_normal(ax, data, label, bins="auto", color=None):
         pdf = np.where(xs < 0, 0.0, pdf)
         ax.plot(xs, pdf, color=color, linewidth=2.0, label=f"{label} ~ N({mu:.1f}, {sd:.1f}²)")
 
-# ───────────────────────────────────────────────
-# Two-case comparison dashboard
-# ───────────────────────────────────────────────
+
 def _ecdf_vals(x):
     x = np.asarray(x, dtype=float)
     x = x[np.isfinite(x)]
@@ -464,7 +455,7 @@ def compare_two_cases_dashboard(caseA, caseB, df_all, out_dir, thresholds_area=N
     fig_pdf_b.savefig(out_dir / f"compare_{caseA}_vs_{caseB}_pdf_buildings.png", dpi=220, bbox_inches="tight")
     plt.close(fig_pdf_b)
 
-    # === NEW: Variance view — Area (cells) (PDF overlays) ===
+    # === Variance view — Area (cells) (PDF overlays) ===
     fig_pdf_a, ax_pdf_a = plt.subplots(figsize=(10.0, 6.0))
     # fig_pdf_a, ax_pdf_a = plt.subplots(figsize=(9.5, 6.0))
     _plot_hist_with_normal(ax_pdf_a, gA["area_cells"].values, caseA, bins="auto", color=colors[0])
@@ -475,7 +466,7 @@ def compare_two_cases_dashboard(caseA, caseB, df_all, out_dir, thresholds_area=N
     # ax_pdf_a.set_title(f"Area Distribution — {caseA} vs {caseB}", fontsize=12)
     ax_pdf_a.tick_params(axis="both", labelsize=10)
 
-    # Add faint grid markers
+
     ax_pdf_a.grid(True, which='major', linestyle='--', linewidth=0.6, alpha=0.4)
     ax_pdf_a.grid(True, which='minor', linestyle=':', linewidth=0.4, alpha=0.3)
     ax_pdf_a.minorticks_on()
@@ -515,9 +506,7 @@ def try_overlay_jaccard_hist(caseA, caseB, out_root):
     plt.close(fig)
 
 
-# ───────────────────────────────────────────────
-# Core per-case runner
-# ───────────────────────────────────────────────
+
 def run_case(case, rng_master):
     name = case["name"]
     schedule_csv = case["SCHEDULE_CSV"]
@@ -603,9 +592,7 @@ def run_case(case, rng_master):
 
     return df_case, summary
 
-# ───────────────────────────────────────────────
-# Main
-# ───────────────────────────────────────────────
+
 def main():
     out_root = pathlib.Path(OUT_ROOT); out_root.mkdir(parents=True, exist_ok=True)
     base_seed = BASE_SEED or (int(dt.datetime.now().timestamp()*1e9) & 0xFFFFFFFF)

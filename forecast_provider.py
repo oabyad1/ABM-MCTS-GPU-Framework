@@ -3,15 +3,8 @@
 Wind‑forecast generator that stays consistent with the *actual* truth
 schedule being simulated.
 
-Usage
------
-    from forecast_provider import set_truth_schedule, get_forecast
+Provides updated forecasts to the MCTS
 
-    truth_sched = load_wind_schedule_from_csv(..., rng=my_rng)
-    set_truth_schedule(truth_sched)        # ← exactly *once*
-
-    ...
-    forecast_df = get_forecast(current_minute=int(model.time))
 """
 
 from __future__ import annotations
@@ -30,17 +23,15 @@ DIR_STD_MIN      = 5.0           # deg
 DIR_STD_MAX      = 20.0
 
 ASSIM_HR         = 8             # inside this horizon we start nudging μ
-# ------------------------------------------------------------------
-# PUBLIC HELPERS
-# ------------------------------------------------------------------
+
 
 
 # ── globals ------------------------------------------------------
-_truth_df:      pd.DataFrame | None = None   # already there
-_background_df: pd.DataFrame | None = None   # NEW
+_truth_df:      pd.DataFrame | None = None
+_background_df: pd.DataFrame | None = None
 # ----------------------------------------------------------------
 
-# forecast_provider.py
+
 def set_forecast_hyperparams(*,
     speed_std_min=None,
     speed_std_max=None,
@@ -91,9 +82,7 @@ def set_background_schedule(schedule: Sequence) -> None:
                                                "speed_mean", "dir_mean"])
     _background_df.sort_values("start_min", inplace=True)
     _background_df.reset_index(drop=True, inplace=True)
-# ------------------------------------------------------------------
-# INTERNAL HELPERS
-# ------------------------------------------------------------------
+
 def _circular_mean(series: pd.Series) -> float:
     rad = np.deg2rad(series.to_numpy())
     return math.degrees(math.atan2(np.mean(np.sin(rad)),
@@ -124,9 +113,7 @@ def _segment_means(start_m: int, end_m: int) -> tuple[float, float]:
     return float(s_mu), float(d_mu)
 
 
-# ------------------------------------------------------------------
-# MAIN ENTRY
-# ------------------------------------------------------------------
+
 def get_forecast(*,
                  current_minute: int,
                  horizon_min: int | None = None) -> pd.DataFrame:

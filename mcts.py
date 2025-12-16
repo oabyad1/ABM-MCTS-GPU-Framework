@@ -18,7 +18,7 @@ import math
 import networkx as nx  # For plotting the MCTS tree structure
 import cProfile
 import pstats
-from model import WildfireModel  # Import your simulation model.
+from model import WildfireModel
 from surrogate_plotting import plot_fire  # plot_fire(surrogate, ...) function
 import json
 import time
@@ -111,10 +111,9 @@ def _save_rollout_snapshot(sim_state, *, tag=""):
 
 
 
-# ← set False to disable dumps
 
 # ---------------------------------------------------------------------------
-# Clean baseline for a given schedule – NEVER re-uses the parent model
+# Clean baseline for a given schedule
 # ---------------------------------------------------------------------------
 def _clean_baseline_score(sim_state, schedule):
     """
@@ -149,7 +148,6 @@ def _clean_baseline_score(sim_state, schedule):
     print("Fm.simtime: ", fm.sim_time)
     fs = fm.calculate_fire_score(fm.sim_time)
     area = fm.calculate_area_score(fm.sim_time)
-    # Be tolerant if the TIFF lacks the built-characteristic layer.
     try:
         bldg = fm.calculate_building_score(fm.sim_time)  # counts residential (>=11) already
     except Exception:
@@ -222,16 +220,12 @@ class MCTSNode:
         self.visits = 0
         self.reward = 0.0  # cumulative reward (reward = -fire_score)
         self.untried_actions = []  # List of (sector_actions, action_code) pairs.
-        # NEW: Add timing statistics attributes.
         self.expansion_time = 0.0         # Time taken when this node was expanded.
         self.total_rollout_time = 0.0       # Cumulative rollout time for this node.
         self.rollout_count = 0            # Count of rollouts performed from this node.
         self.exec_time = 0.0              # Execution time (relative to MCTS start) at node expansion.
-        self.iteration = None             # NEW: The iteration number when this node was created.
+        self.iteration = None             # The iteration number when this node was created.
 
-    # def is_terminal(self, max_depth):
-    #     # Terminal if the maximum search depth is reached.
-    #     return self.depth >= max_depth
 
     def is_terminal(self, max_depth: int) -> bool:
         """
@@ -265,7 +259,6 @@ class MCTSNode:
         return best
 
 
-# --- Helper: asset shorthand function ---
 def get_asset_shorthand(asset_type):
     mapping = {
         "FireHerc": "FH",
@@ -278,220 +271,10 @@ def get_asset_shorthand(asset_type):
     return mapping.get(asset_type, asset_type[:3].upper())
 
 
-# --- Functions to clone simulation state ---
-# def clone_simulation(parent_model):
-#     print("cloning simulation ...")
-#     new_model = WildfireModel(
-#         airtanker_counts=parent_model.agent_counts,
-#         wind_speed=parent_model.wind_speed,
-#         wind_direction=parent_model.wind_direction,
-#         base_positions=parent_model.base_positions,
-#         lake_positions=parent_model.lake_positions,
-#         time_step=parent_model.time_step,
-#         debug=parent_model.debug,
-#         start_time=parent_model.start_time,
-#         case_folder=parent_model.case_folder,
-#         overall_time_limit=parent_model.overall_time_limit,
-#         fire_spread_sim_time=parent_model.fire_spread_sim_time,
-#         operational_delay=parent_model.operational_delay,
-#         enable_plotting=False,
-#         groundcrew_count=parent_model.groundcrew_count,
-#         groundcrew_speed = parent_model.groundcrew_speed,
-#         elapsed_minutes = parent_model.elapsed_minutes,
-#         groundcrew_sector_mapping = parent_model.groundcrew_sector_mapping,
-#         second_groundcrew_sector_mapping = parent_model.second_groundcrew_sector_mapping,
-#     )
-#     new_model.time = parent_model.time
-#     new_model.current_time = parent_model.current_time
-#     new_model.fire.fuel_model = parent_model.fire.fuel_model.copy()
-#     for new_agent, old_agent in zip(new_model.schedule.agents, parent_model.schedule.agents):
-#         new_agent.position = old_agent.position
-#         new_agent.previous_positions = old_agent.previous_positions.copy()
-#     return new_model
 
-#########REALLY GOOD CLONE_SIMULATION JUNE 10######################
-# def clone_simulation(parent_model, new_wind_schedule=None):
-#     """
-#     Deep-clone WildfireModel; if new_wind_schedule is provided, use it
-#     instead of the parent’s schedule.
-#     """
-#     # ── commit buffered fire-line cells BEFORE cloning ────────────────
-#     for ag in parent_model.schedule.agents:
-#         if isinstance(ag, GroundCrewAgent):
-#             ag.flush_clear_buffer()
-#
-#
-#     new_model = WildfireModel(
-#         airtanker_counts     = parent_model.agent_counts,
-#         wind_speed           = parent_model.wind_speed,
-#         wind_direction       = parent_model.wind_direction,
-#         base_positions       = parent_model.base_positions,
-#         lake_positions       = parent_model.lake_positions,
-#         time_step            = parent_model.time_step,
-#         debug                = parent_model.debug,
-#         start_time           = parent_model.start_time,
-#         case_folder          = parent_model.case_folder,
-#         overall_time_limit   = parent_model.overall_time_limit,
-#         fire_spread_sim_time = parent_model.fire_spread_sim_time,
-#         operational_delay    = parent_model.operational_delay,
-#         enable_plotting      = False,
-#         groundcrew_count     = parent_model.groundcrew_count,
-#         groundcrew_speed     = parent_model.groundcrew_speed,
-#         # elapsed_minutes      = parent_model.elapsed_minutes,
-#         elapsed_minutes      = parent_model.time,
-#         groundcrew_sector_mapping        = parent_model.groundcrew_sector_mapping,
-#         second_groundcrew_sector_mapping = parent_model.second_groundcrew_sector_mapping,
-#         wind_schedule        = (new_wind_schedule
-#                                 if new_wind_schedule is not None
-#                                 else parent_model.wind_schedule),
-#
-#         fuel_model_override=parent_model.fire.fuel_model
-#     )
-#     # ---- copy mutable state -------------------------------------------
-#     new_model.time         = parent_model.time
-#     new_model.current_time = parent_model.current_time
-#     new_model.fire.fuel_model = parent_model.fire.fuel_model.copy()
-#     #
-#     # new_model.fire = copy.deepcopy(parent_model.fire)
-#
-#     new_model.baseline_fire_score = parent_model.baseline_fire_score
-#
-#     # ─────────────────────────────────────────────────────────────
-#     # Preserve containment status  ⬇⬇⬇
-#     new_model.contained_sectors = parent_model.contained_sectors.copy()
-#     # ─────────────────────────────────────────────────────────────
-#
-#     # -- ⬇⬇ NEW: copy boundary-point history ---------------------
-#     if hasattr(parent_model, "used_boundary_points"):
-#         new_model.used_boundary_points = {
-#             b: pts.copy() for b, pts in parent_model.used_boundary_points.items()
-#         }
-#     # -------------------------------------------------------------
-#     for n, o in zip(new_model.schedule.agents, parent_model.schedule.agents):
-#         n.position           = o.position
-#         n.previous_positions = o.previous_positions.copy()
-#
-#     for n, o in zip(new_model.schedule.agents, parent_model.schedule.agents):
-#
-#         # --- common to every agent -----------------------------------
-#         n.position = o.position
-#         n.previous_positions = o.previous_positions.copy()
-#
-#         # --- extra state for ground-crew ------------------------------
-#         if isinstance(o, GroundCrewAgent):
-#             n.state = o.state
-#             n.sector_index = o.sector_index
-#             n.path = o.path.copy()
-#             n.start_rc = o.start_rc
-#             n.planned_start = o.planned_start
-#             n.planned_finish = o.planned_finish
-#             n._ticks_left = o._ticks_left
-#             n._eta_remaining = o._eta_remaining
-#             n._walk_tick = o._walk_tick
-#             n.replan_disabled = o.replan_disabled
-#             # ── NEW ②: preserve build progress pointer -------------------
-#             if hasattr(o, "_path_idx"):  # ### ADDED
-#                 n._path_idx = o._path_idx  # ### ADDED
-#             # -------------------------------------------------------------
-#
-#             # ── NEW ③: carry the list of cells already cleared ----------
-#             if hasattr(o, "cleared_cells"):  # ### ADDED
-#                 n.cleared_cells = o.cleared_cells.copy()  # ### ADDED
-#             # -------------------------------------------------------------
-#
-#     return new_model
-
-#
-# # Test this new good
-# def clone_simulation(parent_model, new_wind_schedule=None):
-#     """
-#     Fast clone that copies only plain-Python fields but keeps correct agent
-#     state.  No deepcopy, no GPU penalties.
-#     """
-#
-#     # 0)  flush pending fire-line batches
-#     for ag in parent_model.schedule.agents:
-#         if isinstance(ag, GroundCrewAgent):
-#             ag.flush_clear_buffer()
-#
-#     # 1)  build a blank shell (constructor makes placeholder agents)
-#     child = WildfireModel(
-#         airtanker_counts     = parent_model.agent_counts,
-#         wind_speed           = parent_model.wind_speed,
-#         wind_direction       = parent_model.wind_direction,
-#         base_positions       = parent_model.base_positions,
-#         lake_positions       = parent_model.lake_positions,
-#         time_step            = parent_model.time_step,
-#         debug                = parent_model.debug,
-#         start_time           = parent_model.start_time,
-#         case_folder          = parent_model.case_folder,
-#         overall_time_limit   = parent_model.overall_time_limit,
-#         fire_spread_sim_time = parent_model.fire_spread_sim_time,
-#         operational_delay    = parent_model.operational_delay,
-#         enable_plotting      = False,
-#         groundcrew_count     = parent_model.groundcrew_count,
-#         groundcrew_speed     = parent_model.groundcrew_speed,
-#         elapsed_minutes      = parent_model.time,
-#         groundcrew_sector_mapping        = parent_model.groundcrew_sector_mapping,
-#         second_groundcrew_sector_mapping = parent_model.second_groundcrew_sector_mapping,
-#         wind_schedule        = (new_wind_schedule
-#                                 if new_wind_schedule is not None
-#                                 else parent_model.wind_schedule),
-#         fuel_model_override  = parent_model.fire.fuel_model,
-#     )
-#
-#     # 2)  top-level mutable state
-#     child.time                = parent_model.time
-#     child.current_time        = parent_model.current_time
-#     child.fire.fuel_model     = parent_model.fire.fuel_model.copy()
-#     child.baseline_fire_score = parent_model.baseline_fire_score
-#     child.contained_sectors   = parent_model.contained_sectors.copy()
-#     if hasattr(parent_model, "used_boundary_points"):
-#         child.used_boundary_points = {
-#             b: pts.copy() for b, pts in parent_model.used_boundary_points.items()
-#         }
-#
-#     # 3)  build lookup → parent agent by unique_id
-#     parent_lookup = {ag.unique_id: ag for ag in parent_model.schedule.agents}
-#
-#     # 4)  sync every child agent with its parent twin
-#     for new_ag in child.schedule.agents:
-#         old_ag = parent_lookup.get(new_ag.unique_id)
-#         if old_ag is None:
-#             continue   # shouldn’t happen
-#
-#         # ---------- common fields ------------------------------------
-#         new_ag.previous_positions = old_ag.previous_positions.copy()
-#         new_ag.grid_rc            = tuple(getattr(old_ag, "grid_rc", (0, 0)))
-#         new_ag.position           = tuple(getattr(old_ag, "position",
-#                                                   new_ag.position))
-#         child.space.move_agent(new_ag, new_ag.position)
-#
-#         # ---------- Ground-crew extras --------------------------------
-#         if isinstance(old_ag, GroundCrewAgent):
-#             new_ag.state            = old_ag.state
-#             new_ag.sector_index     = old_ag.sector_index
-#             new_ag.path             = old_ag.path.copy()
-#             new_ag.start_rc         = old_ag.start_rc
-#             new_ag.planned_start    = old_ag.planned_start
-#             new_ag.planned_finish   = old_ag.planned_finish
-#             new_ag._walk_tick       = old_ag._walk_tick
-#             new_ag._ticks_left      = old_ag._ticks_left
-#             new_ag._eta_remaining   = old_ag._eta_remaining
-#             new_ag.replan_disabled  = old_ag.replan_disabled
-#             new_ag.cleared_batch    = old_ag.cleared_batch.copy()
-#             if hasattr(old_ag, "_path_idx"):
-#                 new_ag._path_idx    = old_ag._path_idx
-#
-#
-#
-#     return child
-#
-
-
-# DEEP CLONING APPROACH BAD: too long and cant reassign the airtankers
 # ---------------------------------------------------------------------------
-# clone_simulation — handles GroundCrewAgent *and* AirtankerAgent safely
+# clone_simulation — handles GroundCrewAgent *and* AirtankerAgent cloning along
+# with the cloning of the whole environment
 # ---------------------------------------------------------------------------
 def clone_simulation(parent_model, new_wind_schedule=None):
     """
@@ -543,22 +326,16 @@ def clone_simulation(parent_model, new_wind_schedule=None):
     child._pair_sync_done = getattr(parent_model, "_pair_sync_done", False)
     child._pair_sync_list = []  # never reuse parent’s transient queue
 
-    # if hasattr(parent_model, "used_boundary_points"):
-    #     child.used_boundary_points = {
-    #         b: pts.copy() for b, pts in parent_model.used_boundary_points.items()
-    #     }
 
-    # ── NEW: carry over the frozen sector centre & angles ──────────
     if hasattr(parent_model, "fixed_center"):
         child.fixed_center = parent_model.fixed_center
         child.fixed_angle_ranges = parent_model.fixed_angle_ranges
 
-        # keep the *live* copies in sync as well
         child.sector_center = parent_model.sector_center
         child.sector_angle_ranges = parent_model.sector_angle_ranges
         child.sector_boundaries = parent_model.sector_boundaries.copy()
 
-    # ---- NEW: copy per-boundary anchor history ------------------
+    # ---- copy per-boundary anchor history ------------------
     if hasattr(parent_model, "boundary_anchors"):
         child.boundary_anchors = {
             b: {role: tup for role, tup in roles.items()}
@@ -572,7 +349,7 @@ def clone_simulation(parent_model, new_wind_schedule=None):
     if not hasattr(child, "ground_crews"):
         child.ground_crews = []
     if not hasattr(child, "aircraft"):
-        child.aircraft = []        # rename if your code expects .airtankers
+        child.aircraft = []
 
     # 4) remove the placeholder crews/aircraft the ctor spawned
     for ag in list(child.schedule.agents):
@@ -595,7 +372,6 @@ def clone_simulation(parent_model, new_wind_schedule=None):
             child.schedule.add(new_at)
 
         else:
-            # any other custom Mesa agents → shallow copy is enough
             import copy
             new_agent = copy.copy(old)
             new_agent.model = child
@@ -610,7 +386,6 @@ def simulate_in_place(model, sector_actions, duration=120):
     It assigns the given sector_actions to the model's agents
     and then steps the model in place for the desired duration.
     """
-    # ── NEW: don’t run if the clock is already at/over the limit ──────────
     remaining = model.overall_time_limit - model.time
     if remaining <= 0:
         return                          # nothing left to simulate
@@ -618,7 +393,7 @@ def simulate_in_place(model, sector_actions, duration=120):
     # ---------------------------------------------------------------------
 
     print('simulating in place')
-    # Assign each agent to its chosen sector(s).
+    # Assign each agent to its chosen sector
     assignment_counters = {asset: 0 for asset in sector_actions.keys()}
     # --- assign sectors -------------------------------------------------
     assignment_counters = {k: 0 for k in sector_actions.keys()}
@@ -626,40 +401,6 @@ def simulate_in_place(model, sector_actions, duration=120):
                         key=lambda ag: (ag.__class__.__name__, ag.unique_id)):
     # for agent in model.schedule.agents:
         atype = agent.__class__.__name__
-
-        # # ── 3a. Ground-crew – only re-task crews that are in “Standby” ──
-        # if isinstance(agent, GroundCrewAgent):
-        #     if atype in sector_actions and agent.state == "Standby":
-        #         idx = assignment_counters[atype]
-        #         if idx < len(sector_actions[atype]):  # safety
-        #             # ← CHANGED: pull the raw 1-based sector
-        #             raw_sector = sector_actions[atype][idx]
-        #
-        #             # ── guard: ignore sectors that are already contained ──
-        #             if model.is_sector_contained(raw_sector - 1):
-        #                 continue  # leave this crew in Standby, try next agent
-        #             # ------------------------------------------------------
-        #
-        #             assignment_counters[atype] += 1
-        #
-        #             # ← CHANGED: convert to 0-based index
-        #             sec_idx = raw_sector - 1
-        #
-        #             # ← CHANGED: ask planner for the 0-based sector
-        #             print("Pinged: Ground Crew Planner")
-        #             planned = model.groundcrew_planner \
-        #                 .get_planned_cells([sec_idx])[sec_idx]
-        #
-        #             # ← CHANGED: store 0-based index in the agent
-        #             agent.sector_index = sec_idx
-        #             agent.update_planned_targets(
-        #                 planned_start=planned["start_cell"],
-        #                 planned_finish=planned["finish_cell"]
-        #             )
-        #             agent.state = "ToStart"
-        #     # crews that are busy keep their current task
-        #     continue  # ↩︎ next agent
-    # ── Ground-crew: retask ONLY those currently in Standby ──────────
         if isinstance(agent, GroundCrewAgent):
             if (atype in sector_actions) and agent.state == "Standby":
                 idx = assignment_counters[atype]
@@ -701,71 +442,6 @@ def simulate_in_place(model, sector_actions, duration=120):
         if not model.step():
             break
 
-# --- Function to simulate a branch given a set of actions ---
-# def simulate_branch(parent_model, sector_actions, duration=120):
-#     """
-#     Clone the parent's simulation state, assign sectors based on sector_actions,
-#     and simulate for a fixed duration.
-#     """
-#     print("simulating branch ...")
-#     branch_model = clone_simulation(parent_model)
-#     assignment_counters = {asset: 0 for asset in sector_actions.keys()}
-#     for agent in branch_model.schedule.agents:
-#         asset_type = agent.__class__.__name__
-#         if asset_type in sector_actions:
-#             idx = assignment_counters[asset_type]
-#             chosen_sector = sector_actions[asset_type][idx]
-#             assignment_counters[asset_type] += 1
-#         else:
-#             chosen_sector = 1
-#         agent.assigned_sector = (f"Sector {chosen_sector}", chosen_sector - 1)
-#         if branch_model.debug:
-#             print(f"Agent {agent.unique_id} ({asset_type}) assigned to Sector {chosen_sector}.")
-#     start_time = branch_model.time
-#     while branch_model.time - start_time < duration:
-#         if not branch_model.step():
-#             break
-#     return branch_model
-# def simulate_branch(parent_model, sector_actions, *, forecast_df, duration=120):
-#     """
-#     Clone parent_model with a *freshly sampled* schedule from forecast_df,
-#     assign sectors, run for `duration`, return the new model.
-#     """
-#     # forecast_sched = sample_schedule_from_forecast(forecast_df)
-#
-#     rng = np.random.default_rng()  # or pass a seed
-#     future_sched = sample_future_schedule(forecast_df,
-#                                           current_minute=int(parent_model.time),
-#                                           rng=rng)
-#
-#     # keep the past exactly as it was in the parent
-#     past_sched = [seg for seg in parent_model.wind_schedule
-#                   if seg[1] <= parent_model.time]
-#
-#     forecast_sched = past_sched + future_sched
-#
-#
-#
-#     branch_model = clone_simulation(parent_model,
-#                                     new_wind_schedule=forecast_sched)
-#     branch_model._wind_schedule_used = forecast_sched
-#
-#     assignment_counters = {k: 0 for k in sector_actions.keys()}
-#     for agent in branch_model.schedule.agents:
-#         atype = agent.__class__.__name__
-#         if atype in sector_actions:
-#             idx = assignment_counters[atype]
-#             sector = sector_actions[atype][idx]
-#             assignment_counters[atype] += 1
-#         else:
-#             sector = 1
-#         agent.assigned_sector = (f"Sector {sector}", sector - 1)
-#
-#     start_time = branch_model.time
-#     while branch_model.time - start_time < duration:
-#         if not branch_model.step():
-#             break
-#     return branch_model
 
 
 # ------------------------------------------------------------------
@@ -836,7 +512,6 @@ def simulate_branch(parent_model, sector_actions, *, forecast_df=None, duration=
             parent_model,
             new_wind_schedule=forecast_sched)
 
-        # (optional) tag the model for later inspection
         branch_model._wind_schedule_used = forecast_sched
     else:
         # schedules disabled → no forecasting, no past segments
@@ -864,39 +539,6 @@ def simulate_branch(parent_model, sector_actions, *, forecast_df=None, duration=
     # for agent in branch_model.schedule.agents:
         atype = agent.__class__.__name__
 
-        # ── 3a. Ground-crew: re-task only if in Standby ────────────────
-        # if isinstance(agent, GroundCrewAgent):
-        #     if (atype in sector_actions
-        #             and agent.state == "Standby"):
-        #         idx = assignment_counters[atype]
-        #         if idx < len(sector_actions[atype]):  # safety
-        #             # pull the raw 1-based sector number
-        #             raw_sector = sector_actions[atype][idx]
-        #
-        #             # ── guard: ignore sectors that are already contained ──
-        #             if branch_model.is_sector_contained(raw_sector - 1):
-        #                 continue  # leave this crew in Standby, try next agent
-        #             # ------------------------------------------------------
-        #
-        #             assignment_counters[atype] += 1
-        #
-        #             # convert to 0-based index
-        #             sec_idx = raw_sector - 1
-        #
-        #             # ask the planner for the 0-based sector
-        #             planned = branch_model.groundcrew_planner \
-        #                 .get_planned_cells([sec_idx])[sec_idx]
-        #
-        #             # store 0-based sector_index on the agent
-        #             agent.sector_index = sec_idx
-        #             agent.update_planned_targets(
-        #                 planned_start=planned["start_cell"],
-        #                 planned_finish=planned["finish_cell"]
-        #             )
-        #             agent.state = "ToStart"
-        #     # crews that are busy keep doing what they were doing
-        #     continue  # ↩︎ skip to next agent
-
         # ground-crew
         if isinstance(agent, GroundCrewAgent):
             if (atype in sector_actions) and agent.state == "Standby":
@@ -909,7 +551,6 @@ def simulate_branch(parent_model, sector_actions, *, forecast_df=None, duration=
                     agent.assign_to_sector(raw_sector - 1)
             continue
 
-        # ── 3b. Everything else (airtankers) – unchanged ───────────────
         if atype in sector_actions:
             idx = assignment_counters[atype]
             chosen_sector = sector_actions[atype][idx]
@@ -918,7 +559,6 @@ def simulate_branch(parent_model, sector_actions, *, forecast_df=None, duration=
             chosen_sector = 1
         agent.assigned_sector = (f"Sector {chosen_sector}", chosen_sector - 1)
 
-    # ── Advance the simulation clock ─────────────────────────────
     start_time = branch_model.time
     while branch_model.time - start_time < duration:
         if not branch_model.step():         # stops on time-limit / containment
@@ -928,53 +568,21 @@ def simulate_branch(parent_model, sector_actions, *, forecast_df=None, duration=
 
 
 # --- Function to generate all possible actions from a simulation state ---
-# def get_possible_actions(current_model, duration=120):
-#     """
-#     Generate possible sector assignments for each asset.
-#     Returns a list of tuples: (sector_actions, action_code).
-#     """
-#     sectors = [1, 2, 3, 4]
-#     asset_counts = {}
-#     for agent in current_model.schedule.agents:
-#         asset_type = agent.__class__.__name__
-#         asset_counts[asset_type] = asset_counts.get(asset_type, 0) + 1
-#     asset_assignments = {}
-#     for asset_type, count in asset_counts.items():
-#         asset_assignments[asset_type] = list(itertools.product(sectors, repeat=count))
-#     asset_types_order = list(asset_counts.keys())
-#     overall_combinations = list(itertools.product(*(asset_assignments[atype] for atype in asset_types_order)))
-#     actions = []
-#     for combination in overall_combinations:
-#         sector_actions = {}
-#         naming_parts = []
-#         for atype, assignment in zip(asset_types_order, combination):
-#             sector_actions[atype] = assignment
-#             shortcode = get_asset_shorthand(atype)
-#             for idx, sector in enumerate(assignment, start=1):
-#                 naming_parts.append(f"{shortcode}{idx}-{sector}")
-#         action_code = "-".join(naming_parts)
-#         actions.append((sector_actions, action_code))
-#     return actions
+
 def get_possible_actions(current_model, duration=120):
     """
     Build every combination of sector assignments for:
-      • all airtankers (as before)
+      • all airtankers
       • ONLY those GroundCrewAgent instances that are currently in 'Standby'
 
     Returns a list of tuples: (sector_actions, action_code)
       sector_actions = {"FireHerc": ( … ), "GroundCrewAgent": ( … ), …}
     """
-    # ── NEW early-exit guard ────────────────────────────────────────────
     remaining = current_model.overall_time_limit - current_model.time
     if remaining <= (duration+1):
         return []  # <- nothing left to plan
 
-    # -------------------------------------------------------------------
 
-
-    # sectors = [1, 2, 3, 4]          # ≈ your 4 tactical sectors
-    # sectors = [s for s in sectors
-    #            if not current_model.is_sector_contained(s - 1)]
 
     n = getattr(current_model, "num_sectors", len(current_model.sector_boundaries))
     sectors = [s for s in range(1, n + 1)
@@ -994,29 +602,18 @@ def get_possible_actions(current_model, duration=120):
     if standby_gc:
         asset_counts["GroundCrewAgent"] = standby_gc
 
-    # ── enumerate assignments per asset-type ───────────────────────
     asset_assignments = {
         atype: list(itertools.product(sectors, repeat=n))
         for atype, n in asset_counts.items()
     }
     # asset_types_order = list(asset_counts.keys())
-    asset_types_order = sorted(asset_counts.keys())  # ★ NEW (was list())
+    asset_types_order = sorted(asset_counts.keys())
 
     overall_combos = itertools.product(
         *(asset_assignments[at] for at in asset_types_order)
     )
 
-    # actions = []
-    # for combo in overall_combos:
-    #     sector_actions = {}
-    #     bits = []
-    #     for atype, assignment in zip(asset_types_order, combo):
-    #         sector_actions[atype] = assignment
-    #         sc = get_asset_shorthand(atype)
-    #         for i, sec in enumerate(assignment, 1):
-    #             bits.append(f"{sc}{i}-{sec}")
-    #     actions.append((sector_actions, "-".join(bits)))
-    # return actions
+
     actions = []
     for combo in overall_combos:
         sector_actions = {}
@@ -1035,188 +632,6 @@ def get_possible_actions(current_model, duration=120):
         actions.append((sector_actions, "-".join(bits)))
     return actions
 
-
-# --- Rollout simulation: randomly simulate actions until reaching the rollout depth ---
-# def rollout(sim_state, rollout_depth, duration=120):
-#     """
-#     Perform a random simulation (rollout) from the given state.
-#     The number of rollout steps is determined by 'rollout_depth', which is computed as (max_depth - current_node.depth)
-#     in the MCTS algorithm.
-#     """
-#     print("rollout ...")
-#     current_state = clone_simulation(sim_state)
-#     for _ in range(rollout_depth):
-#         possible_actions = get_possible_actions(current_state, duration)
-#         if not possible_actions:
-#             break
-#         action, _ = random.choice(possible_actions)
-#         current_state = simulate_branch(current_state, action, duration)
-#     # Evaluate the final state using the fire score.
-#     fire_score = current_state.fire.calculate_fire_score(current_state.fire_spread_sim_time)
-#     reward = -fire_score  # Lower fire score is better.
-#     return reward
-
-# def rollout(sim_state, rollout_depth, duration=120):
-#     """
-#     Perform a random simulation (rollout) from the given state,
-#     but only clone once at the beginning (current_state).
-#     Then simulate in place for each random action.
-#     """
-#     print("rollout ...")
-#     # Clone once at the start:
-#     current_state = clone_simulation(sim_state)
-#
-#     for _ in range(rollout_depth):
-#         possible_actions = get_possible_actions(current_state, duration)
-#         if not possible_actions:
-#             break
-#         # Pick a random action from the available set:
-#         sector_actions, _ = random.choice(possible_actions)
-#
-#         # Instead of cloning again, just simulate in place:
-#         simulate_in_place(current_state, sector_actions, duration=duration)
-#
-#     # Evaluate final state using the fire score:
-#     # print(current_state.fire_spread_sim_time)
-#     fire_score = current_state.fire.calculate_fire_score(current_state.fire_spread_sim_time)
-#     reward = -fire_score  # Lower fire score is better
-#     return reward
-# def rollout(sim_state, forecast_df, rollout_depth, duration=120):
-#     """
-#     Rollout using the SAME forecast table for every step.
-#     Clone once, then simulate_in_place in a loop.
-#     """
-#     # sched = sample_schedule_from_forecast(forecast_df)
-#     rng = np.random.default_rng()
-#     future_sched = sample_future_schedule(forecast_df,
-#                                           current_minute=int(sim_state.time),
-#                                           rng=rng)
-#     past_sched = [seg for seg in sim_state.wind_schedule
-#                   if seg[1] <= sim_state.time]
-#     sched = past_sched + future_sched
-#
-#     current_state = clone_simulation(
-#         sim_state,
-#         new_wind_schedule=sched
-#     )
-#     current_state._wind_schedule_used = sched
-#
-#
-#     # ⬇️  NEW: dump this rollout’s schedule  (optional)
-#     if DUMP_SCHEDULES:
-#         h = schedule_hash(sched)
-#         origin = getattr(sim_state, "node_name", "root_clone")
-#         filename = f"rollout_{slugify(origin)}_{h}_{time.time_ns()}.json"
-#
-#         pathlib.Path("schedule_dumps").mkdir(exist_ok=True)
-#         with open(f"schedule_dumps/{filename}", "w") as f:
-#             json.dump(
-#                 {
-#                     "phase": "rollout",
-#                     "origin": origin,
-#                     "hash": h,
-#                     "schedule": sched,
-#                 },
-#                 f,
-#                 indent=2,
-#             )
-#
-#
-#     for _ in range(rollout_depth):
-#         possible = get_possible_actions(current_state, duration)
-#         if not possible:
-#             break
-#         sector_actions, _ = random.choice(possible)
-#         simulate_in_place(current_state, sector_actions, duration)
-#
-#     fire_score = current_state.fire.calculate_fire_score(
-#         current_state.fire_spread_sim_time)
-#     return -fire_score
-#June 2nd GOOD
-# def rollout(sim_state, forecast_df, rollout_depth, duration=120):
-#     """
-#     One Monte-Carlo rollout from `sim_state`.
-#
-#     • If wind-schedules are **enabled** (sim_state.wind_schedule ≠ None)
-#       → draw ONE future schedule from `forecast_df`, keep it fixed,
-#         then simulate_in_place() for every random action.
-#
-#     • If wind-schedules are **disabled**
-#       → clone once (new_wind_schedule=None) and ignore every
-#         forecast / sampling / dumping step.
-#     """
-#
-#     schedules_enabled = sim_state.wind_schedule is not None
-#
-#     # ── schedules OFF  ─────────────────────────────────────────────
-#     if not schedules_enabled:
-#         current_state = clone_simulation(sim_state, new_wind_schedule=None)
-#
-#         for _ in range(rollout_depth):
-#             poss = get_possible_actions(current_state, duration)
-#             if not poss:
-#                 break
-#             actions, _ = random.choice(poss)
-#             simulate_in_place(current_state, actions, duration)
-#
-#         fire_score = current_state.fire.calculate_fire_score(
-#                         current_state.fire_spread_sim_time)
-#
-#         print("Time at which firescore is calculated: ", current_state.fire_spread_sim_time)
-#         print("Fire score: ", fire_score)
-#         normalized_reward = -fire_score / sim_state.baseline_fire_score
-#         return normalized_reward
-#
-#     # ── schedules ON  ──────────────────────────────────────────────
-#     rng = np.random.default_rng()
-#     future_sched = sample_future_schedule(
-#         forecast_df,
-#         current_minute=int(sim_state.time),
-#         rng=rng)
-#
-#     past_sched = [seg for seg in sim_state.wind_schedule
-#                   if seg[1] <= sim_state.time]
-#     sched = past_sched + future_sched
-#
-#     current_state = clone_simulation(
-#         sim_state,
-#         new_wind_schedule=sched
-#     )
-#     current_state._wind_schedule_used = sched
-#
-#     # optional debug dump
-#     if DUMP_SCHEDULES:
-#         h = schedule_hash(sched)
-#         origin = getattr(sim_state, "node_name", "root_clone")
-#         fname = f"rollout_{slugify(origin)}_{h}_{time.time_ns()}.json"
-#         pathlib.Path("schedule_dumps").mkdir(exist_ok=True)
-#         with open(f"schedule_dumps/{fname}", "w") as f:
-#             json.dump({"phase": "rollout",
-#                        "origin": origin,
-#                        "hash": h,
-#                        "schedule": sched}, f, indent=2)
-#
-#     # random actions
-#     for _ in range(rollout_depth):
-#         poss = get_possible_actions(current_state, duration)
-#         if not poss:
-#             break
-#         actions, _ = random.choice(poss)
-#         simulate_in_place(current_state, actions, duration)
-#
-#     fire_score = current_state.fire.calculate_fire_score(
-#                     current_state.fire_spread_sim_time)
-#
-#     print("Time at which firescore is calculated: ", current_state.fire_spread_sim_time)
-#     print("Fire score: ", fire_score)
-#
-#
-#     # normalized_reward = -fire_score / sim_state.baseline_fire_score
-#     baseline_score = _clean_baseline_score(sim_state, sched)
-#     print("Baseline score: ", baseline_score)
-#     normalized_reward = -fire_score / baseline_score
-#     print("Normalized reward: ", normalized_reward)
-#     return  normalized_reward
 
 
 def rollout(sim_state, forecast_df, rollout_depth, duration=120, building_weight=1.0):
@@ -1241,8 +656,8 @@ def rollout(sim_state, forecast_df, rollout_depth, duration=120, building_weight
         for _ in range(rollout_depth):
             poss = get_possible_actions(current_state, duration)
             if not poss:
-                #NEW: No valid actions available; advance simulation time with a no-op.
-                simulate_in_place(current_state, {}, duration)  #NEW addition: advancing simulation time
+                #No valid actions available; advance simulation time with a no-op.
+                simulate_in_place(current_state, {}, duration)
                 break
             actions, _ = random.choice(poss)
             simulate_in_place(current_state, actions, duration)
@@ -1255,7 +670,7 @@ def rollout(sim_state, forecast_df, rollout_depth, duration=120, building_weight
         print("Fire score: ", fire_score)
         normalized_reward = -fire_score / sim_state.baseline_fire_score
 
-        # _save_rollout_snapshot(  # ← NEW
+        # _save_rollout_snapshot(
         #     current_state,
         #     tag=getattr(sim_state, "node_name", "root")
         # )
@@ -1298,8 +713,7 @@ def rollout(sim_state, forecast_df, rollout_depth, duration=120, building_weight
         print(f"rollout: {i}")
         poss = get_possible_actions(current_state, duration)
         if not poss:
-            #NEW: No valid actions available; advance simulation time with a no-op.
-            simulate_in_place(current_state, {}, duration)  #NEW addition: advancing simulation time
+            simulate_in_place(current_state, {}, duration)
             break
         actions, _ = random.choice(poss)
         simulate_in_place(current_state, actions, duration)
@@ -1322,15 +736,12 @@ def rollout(sim_state, forecast_df, rollout_depth, duration=120, building_weight
 
 
 
-    # _save_rollout_snapshot(  # ← NEW
+    # _save_rollout_snapshot(
     #     current_state,
     #     tag=getattr(sim_state, "node_name", "root")
     # )
 
     # return normalized_reward
-
-
-
 
     #NEW REWARD SYSTEM
 
@@ -1373,277 +784,6 @@ def rollout(sim_state, forecast_df, rollout_depth, duration=120, building_weight
     return reward
 
 
-# --- Modified MCTS algorithm implementation with progress and node execution time tracking ---
-# def mcts(root_state, iterations=100, max_depth=2, duration=120, exploration_constant=math.sqrt(2), track_progress=False, on_iteration = None):
-#     """
-#     Run MCTS starting from root_state.
-#     - iterations: number of MCTS iterations.
-#     - max_depth: maximum decision depth.
-#     - duration: simulation duration per branch decision.
-#     - track_progress: if True, prints progress messages and records node execution times.
-#     """
-#     print("starting MCTS ...")
-#     print(exploration_constant)
-#     root_node = MCTSNode(sim_state=root_state, parent=None, action=None, node_name="root", depth=0)
-#     root_node.untried_actions = get_possible_actions(root_state, duration)
-#     # forecast_df = root_state.latest_forecast_df
-#     forecast_df = getattr(root_state, "latest_forecast_df", None)
-#
-#     # NEW: Initialize tracking variables if enabled.
-#     tracking_start_time = datetime.datetime.now() if track_progress else None
-#     node_exec_times = [] if track_progress else []
-#
-#     for i in range(iterations):
-#         if track_progress:
-#             elapsed = datetime.datetime.now() - tracking_start_time
-#             print(f"[{elapsed}] Starting iteration {i+1}/{iterations}")
-#
-#         node = root_node
-#         # SELECTION: Traverse until a node that is not fully expanded or is terminal.
-#         while not node.is_terminal(max_depth) and node.is_fully_expanded() and node.children:
-#             node = node.best_child(exploration_constant)
-#         # EXPANSION: If not terminal, expand with one of the untried actions.
-#         if not node.is_terminal(max_depth):
-#             if node.untried_actions:
-#                 idx = random.randrange(len(node.untried_actions))
-#                 action, action_code = node.untried_actions.pop(idx)
-#
-#                 # NEW: Start timing the expansion.
-#                 t_expansion_start = time.perf_counter()
-#                 # new_state = simulate_branch(node.sim_state, action, duration)
-#                 new_state = simulate_branch(node.sim_state, action,
-#                                             forecast_df=forecast_df,
-#                                             duration=duration)
-#                 t_expansion_end = time.perf_counter()
-#                 expansion_time = t_expansion_end - t_expansion_start
-#
-#                 child_name = f"{node.node_name}-{new_state.time}-{action_code}"
-#                 child_node = MCTSNode(sim_state=new_state, parent=node, action=action, node_name=child_name,
-#                                       depth=node.depth + 1)
-#                 child_node.expansion_time = expansion_time  # Record the expansion time.
-#                 # >>> begin dump  ──────────────────────────────────────────────
-#                 if DUMP_SCHEDULES:
-#                     sched = new_state._wind_schedule_used  # just created
-#                     h = schedule_hash(sched)
-#
-#                     pathlib.Path("schedule_dumps").mkdir(exist_ok=True)
-#                     friendly = slugify(child_name)
-#                     filename = f"exp_iter{i + 1}_{friendly}_{h}.json"
-#                     with open(f"schedule_dumps/{filename}", "w") as f:
-#                         json.dump(
-#                             {
-#                                 "phase": "expansion",
-#                                 "iteration": i + 1,
-#                                 "parent_node": node.node_name,
-#                                 "node_name": child_name,
-#                                 "depth": child_node.depth,
-#                                 "hash": h,
-#                                 "schedule": sched,
-#                             },
-#                             f,
-#                             indent=2,
-#                         )
-#                 # <<< end dump  ────────────────────────────────────────────────
-#                 # NEW: Record the iteration and execution time.
-#                 if track_progress:
-#                     exec_time = (datetime.datetime.now() - tracking_start_time).total_seconds()
-#                     child_node.exec_time = exec_time
-#                     child_node.iteration = i + 1
-#                     node_exec_times.append((i + 1, exec_time))
-#                     print(f"[{datetime.datetime.now() - tracking_start_time}] Expanded node: {child_node.node_name} (Depth: {child_node.depth}, Iteration: {child_node.iteration}, Exec Time: {exec_time:.4f} sec)")
-#                 if child_node.depth < max_depth:
-#                     child_node.untried_actions = get_possible_actions(new_state, duration)
-#                 node.children.append(child_node)
-#                 node = child_node
-#
-#         # SIMULATION: Perform a rollout from this node.
-#         rollout_depth = (3+ max_depth) - node.depth  # Remaining rollout steps.
-#         t_rollout_start = time.perf_counter()
-#         # reward = rollout(node.sim_state, rollout_depth, duration)
-#         reward = rollout(node.sim_state, forecast_df,
-#                          rollout_depth, duration)
-#
-#         t_rollout_end = time.perf_counter()
-#         rollout_time = t_rollout_end - t_rollout_start
-#         node.total_rollout_time += rollout_time
-#         node.rollout_count += 1
-#
-#         # BACKPROPAGATION: Update the node and its ancestors.
-#         while node is not None:
-#             node.visits += 1
-#             node.reward += reward
-#             node = node.parent
-#
-#         if track_progress:
-#             print(f"[{datetime.datetime.now() - tracking_start_time}] Completed iteration {i+1}/{iterations}")
-#         # ─── NEW: fire the callback so the UI can update ───
-#
-#         if on_iteration:
-#             # Pass the root of the tree and the iteration index:
-#             on_iteration(root_node, i + 1)
-#     return root_node, node_exec_times  # Return both the MCTS tree and the execution time data.
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Monte-Carlo Tree Search that RESAMPLES wind every time an edge is traversed
-# ─────────────────────────────────────────────────────────────────────────────
-#best
-# def mcts(root_state,
-#          *,
-#          iterations            = 100,
-#          max_depth             = 2,
-#          duration              = 120,
-#          exploration_constant  = math.sqrt(2),
-#          track_progress        = False,
-#          on_iteration          = None):
-#     """
-#     Run MCTS starting from *root_state*.
-#
-#     •  Every edge traversal (whether during SELECTION or EXPANSION) calls
-#        `simulate_branch()` which     → draws a NEW wind schedule for the next
-#        120-min slice and advances the simulation.
-#
-#     •  Thus each node’s value is an average over many independent wind draws;
-#        no single unlucky sample can poison the estimate.
-#
-#     All original debug prints, schedule dumps, timing, and UI callbacks are
-#     kept intact.
-#     """
-#     print("starting MCTS …")
-#     print(exploration_constant)
-#
-#     # ── root node & helpers ────────────────────────────────────────────────
-#     root_node                 = MCTSNode(sim_state=root_state,
-#                                          parent=None,
-#                                          action=None,
-#                                          node_name="root",
-#                                          depth=0)
-#     root_node.untried_actions = get_possible_actions(root_state, duration)
-#     forecast_df               = getattr(root_state, "latest_forecast_df", None)
-#
-#     # optional tracking
-#     tracking_start_time = datetime.datetime.now() if track_progress else None
-#     node_exec_times     = []  if track_progress else []
-#
-#     # ---------------------------------------------------------------------
-#     for i in range(iterations):
-#
-#         if track_progress:
-#             elapsed = datetime.datetime.now() - tracking_start_time
-#             print(f"[{elapsed}] Starting iteration {i+1}/{iterations}")
-#
-#         # ❶ fresh working copy we will mutate along the path
-#         node        = root_node
-#         working_sim = clone_simulation(root_state)          # cheap CuPy copy
-#
-#         # ── SELECTION ────────────────────────────────────────────────────
-#         while (not node.is_terminal(max_depth)
-#                and node.is_fully_expanded()
-#                and node.children):
-#
-#             # choose best child
-#             child = node.best_child(exploration_constant)
-#
-#             # ▶ resample wind & advance 120 min for THAT action
-#             working_sim = simulate_branch(working_sim,
-#                                           child.action,
-#                                           forecast_df=forecast_df,
-#                                           duration=duration)
-#
-#             node = child
-#
-#         # ── EXPANSION ────────────────────────────────────────────────────
-#         if (not node.is_terminal(max_depth)) and node.untried_actions:
-#             idx                = random.randrange(len(node.untried_actions))
-#             action, action_code= node.untried_actions.pop(idx)
-#
-#             # timing start
-#             t_exp_start = time.perf_counter()
-#
-#             # resample & advance
-#             working_sim = simulate_branch(working_sim,
-#                                           action,
-#                                           forecast_df=forecast_df,
-#                                           duration=duration)
-#
-#             expansion_time = time.perf_counter() - t_exp_start
-#
-#             # build child node (template state only)
-#             child_name = f"{node.node_name}-{working_sim.time}-{action_code}"
-#             child_node = MCTSNode(sim_state=working_sim,
-#                                   parent=node,
-#                                   action=action,
-#                                   node_name=child_name,
-#                                   depth=node.depth + 1)
-#             child_node.expansion_time = expansion_time
-#
-#             # >>> DEBUG / dump sampled schedule ---------------------------
-#             if DUMP_SCHEDULES:
-#                 sched = working_sim._wind_schedule_used
-#                 h     = schedule_hash(sched)
-#                 pathlib.Path("schedule_dumps").mkdir(exist_ok=True)
-#                 fname = f"exp_iter{i+1}_{slugify(child_name)}_{h}.json"
-#                 with open(f"schedule_dumps/{fname}", "w") as f:
-#                     json.dump({"phase"      : "expansion",
-#                                "iteration"  : i+1,
-#                                "parent_node": node.node_name,
-#                                "node_name"  : child_name,
-#                                "depth"      : child_node.depth,
-#                                "hash"       : h,
-#                                "schedule"   : sched},
-#                               f, indent=2)
-#             # <<< ---------------------------------------------------------
-#
-#             # progress tracking
-#             if track_progress:
-#                 exec_time = (datetime.datetime.now()
-#                              - tracking_start_time).total_seconds()
-#                 child_node.exec_time = exec_time
-#                 child_node.iteration = i + 1
-#                 node_exec_times.append((i + 1, exec_time))
-#                 print(f"[{datetime.datetime.now() - tracking_start_time}] "
-#                       f"Expanded {child_node.node_name}  "
-#                       f"(D:{child_node.depth} It:{child_node.iteration} "
-#                       f"t={exec_time:.3f}s)")
-#
-#             # initialise its untried-action list
-#             if child_node.depth < max_depth:
-#                 child_node.untried_actions = get_possible_actions(working_sim,
-#                                                                   duration)
-#
-#             node.children.append(child_node)
-#             node = child_node    # search continues from the new node
-#
-#         # ── SIMULATION (roll-out) ────────────────────────────────────────
-#         rollout_depth   = (3 + max_depth) - node.depth
-#         t_roll_start    = time.perf_counter()
-#         reward          = rollout(working_sim,       # not node.sim_state !
-#                                   forecast_df,
-#                                   rollout_depth,
-#                                   duration)
-#         rollout_time    = time.perf_counter() - t_roll_start
-#         node.total_rollout_time += rollout_time
-#         node.rollout_count      += 1
-#
-#         # ── BACK-PROPAGATION ─────────────────────────────────────────────
-#         cur = node
-#         while cur is not None:
-#             cur.visits += 1
-#             cur.reward += reward
-#             cur = cur.parent
-#
-#         if track_progress:
-#             print(f"[{datetime.datetime.now() - tracking_start_time}] "
-#                   f"Completed iteration {i+1}/{iterations}")
-#
-#         # ── UI callback ─────────────────────────────────────────────────
-#         if on_iteration:
-#             on_iteration(root_node, i + 1)
-#
-#     return root_node, node_exec_times
-
-
-#mcts with debug
-
 
 def mcts(root_state,
          *,
@@ -1651,8 +791,8 @@ def mcts(root_state,
          max_depth             = 2,
          duration              = 120,
          exploration_constant  = 1/math.sqrt(2),
-         building_weight      = 1.0,        # ← new argument
-         rollout_depth_adjustment: int = 22,  # ← NEW
+         building_weight      = 1.0,
+         rollout_depth_adjustment: int = 22,
 
          track_progress        = False,
          on_iteration          = None):

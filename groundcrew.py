@@ -580,7 +580,7 @@ def _mark_anchor_uncompleted(model, boundary_idx: int, role: str, by=None):
 #         eta_clear  = _rough_line_minutes(model, start_cell, probe_finish)
 #         eta_travel = _travel_minutes(model, start_cell, origin_rc)
 #
-#         if eta_clear > (probe_buf - 100):                      # your threshold
+#         if eta_clear > (probe_buf - 100):
 #
 #             # final_buf   = probe_buf + eta_clear + eta_travel +  model.GC_FINISH_SAFETY_MIN
 #             final_buf   = eta_clear + eta_travel +  model.GC_FINISH_SAFETY_MIN
@@ -929,7 +929,7 @@ def plan_start_finish(model, sector_idx: int, origin_rc: tuple[int, int] | None 
 #     boundary_rc = (r0, c0)
 #     last_valid = boundary_rc
 #
-#     # 3) now compute your march‐direction from a valid start
+#     # 3) now compute march‐direction from a valid start
 #     dr = boundary_rc[0] - center_rc[0]
 #     dc = boundary_rc[1] - center_rc[1]
 #
@@ -1176,7 +1176,7 @@ class GroundCrewAgent(mesa.Agent):
         super().__init__(uid, model)
         self.sector_index = sector_index
         # ── keep the original speed so we can rebuild the agent later ──
-        self._speed_m_per_min = speed_m_per_min  # <<< NEW line
+        self._speed_m_per_min = speed_m_per_min
         self.buffer_dist = buffer_dist
         self.line_width = max(1, line_width)
         self.cell_size = model.fire.transform[0]
@@ -1356,8 +1356,8 @@ class GroundCrewAgent(mesa.Agent):
         clone.start_time_abs = self.start_time_abs
         clone.last_cell_idx  = self.last_cell_idx
         clone.path_times     = list(self.path_times)
-        clone.start_boundary = self.start_boundary  # NEW
-        clone.finish_boundary = self.finish_boundary  # NEW
+        clone.start_boundary = self.start_boundary
+        clone.finish_boundary = self.finish_boundary
         clone.aborted_fire_intercept = self.aborted_fire_intercept
         # make sure the agent is on the new space grid
         new_model.space.move_agent(clone, clone.position)
@@ -1365,7 +1365,7 @@ class GroundCrewAgent(mesa.Agent):
         return clone
 
         # ─────────────────────────────────────────────────────────────────────
-        #  NEW 1-liner helper so the model can re-task the crew later
+        # 1-liner helper so the model can re-task the crew later
         # ─────────────────────────────────────────────────────────────────────
 
     def assign_to_sector(self, sector_idx: int):
@@ -1383,7 +1383,7 @@ class GroundCrewAgent(mesa.Agent):
         self.start_rc = self.planned_start
         self.state = "ToStart"  # reset mini-FSM
         self.replan_disabled = False
-        # NEW: clear any legacy “stopped-on-fire” state from the prior mission.
+        #  clear any legacy “stopped-on-fire” state from the prior mission.
         self.aborted_fire_intercept = False
 
         if hasattr(self.model, "_register_first_pair"):
@@ -1446,7 +1446,7 @@ class GroundCrewAgent(mesa.Agent):
         (cleared_batch) are committed to the fire model before
         the simulation is cloned.
         """
-        self._flush_batch()  # ← uses your cleared_batch list
+        self._flush_batch()
 
     def update_planned_targets(self, planned_start: tuple[int, int], planned_finish: tuple[int, int]) -> None:
         """
@@ -1579,7 +1579,6 @@ class GroundCrewAgent(mesa.Agent):
 
             M, fire = self.model, self.model.fire
 
-            # --- Grids identical to your commented code ---
             raw_mtt = fire.arrival_time_grid
             mtt = np.where(np.isnan(raw_mtt), np.nan,
                            np.clip(raw_mtt - M.time, 0, None))

@@ -7,7 +7,7 @@ import numpy as np
 from shapely.geometry import Polygon
 from scipy.spatial import ConvexHull
 
-# Import the new drops module (adjust the filename if needed)
+# Import the new drops module
 from drops_surrogate import Drop, set_drop, get_point_angle
 # Import the new plotting module for color maps.
 import surrogate_plotting as plotting
@@ -26,7 +26,7 @@ class InputCondition(Enum):
     REFUEL_COMPLETE = "Refuel complete"
     NON_OPERATIONAL_TIME = "Non-operational time"
     OPERATIONAL_TIME = "Operational time"
-    REASSIGN_AIRBORNE = "Reassign airborne"  # ★ NEW
+    REASSIGN_AIRBORNE = "Reassign airborne"
 
 # Minimum spacing rules
 _MAX_RECENT_DROPS = 3          # keep at most this many of *my* drops
@@ -41,7 +41,7 @@ class AirtankerAgent(mesa.Agent):
         self.base_position = base_position
         self.position = base_position
         self.state = "Ready for deployment"
-        self._orig_config = config.copy()          #  <<< NEW
+        self._orig_config = config.copy()
 
         # Config Attributes
         self.drop_capacity = config["drop_capacity"]
@@ -56,7 +56,7 @@ class AirtankerAgent(mesa.Agent):
         self.is_24_7 = config["is_24_7"]
         self.fuel_threshold = config["fuel_threshold"]
 
-        #NEW
+
         self.deterministic_fire_target = config.get("deterministic_fire_target", False)
         self.fixed_fire_target_angle = config.get("fixed_fire_target_angle")  # None ⇒ use spacing rule
 
@@ -168,7 +168,7 @@ class AirtankerAgent(mesa.Agent):
     #     clone._next_drop_angle = self._next_drop_angle
     #     # … etc. (leave the rest untouched)
     #
-    #     # ── NEW: optional mission reset ───────────────────────────────
+    #
     #
     #     clone.state = "Ready for deployment"
     #     clone.drop_target = None
@@ -201,8 +201,7 @@ class AirtankerAgent(mesa.Agent):
             time_step=new_model.time_step,
         )
 
-        # ── copy runtime fields exactly ───────────────────────────────────
-        # (everything you already had stays)
+
         clone.position = tuple(self.position)
         clone.angle = self.angle
         clone.previous_positions = list(self.previous_positions)
@@ -228,7 +227,7 @@ class AirtankerAgent(mesa.Agent):
             clone.takeoff_complete = False
             clone._skip_ground_ops = False
 
-        # reset *only* mission-specific bits (makes the planner happy)
+        # reset *only* mission-specific bits
 
         clone.drop_target = None
         clone.drop_angle = None
@@ -340,7 +339,7 @@ class AirtankerAgent(mesa.Agent):
         elif self.deterministic_fire_target:
             # How many airtankers are in the simulation?
             try:
-                total_aircraft = self.model.num_aircraft          # <- if you already track this
+                total_aircraft = self.model.num_aircraft
             except AttributeError:
                 total_aircraft = len(self.model.schedule.agents)  # <- Mesa fallback
 
@@ -667,7 +666,7 @@ class AirtankerAgent(mesa.Agent):
     #     try:
     #         aggregated_ros = self.model.fire.aggregate_perimeter_ros_by_increments(
     #             angle_ranges=increments,
-    #             statistic='median',  # or 'median' if you prefer
+    #             statistic='median',  # or 'median'
     #             time_threshold=drop_time,  # using drop_time as the threshold
     #
     #             tolerance_past=5,
@@ -764,7 +763,7 @@ class AirtankerAgent(mesa.Agent):
             trial_mid, trial_drop_ang = get_point_angle(
                 self.model.fire, trial_ang, t_drop, self.buffer_distance
             )
-            # ---------- NEW: bail out gracefully on failure -------------------
+
             if trial_mid is None:
                 self._skip_current_drop("no valid contour / drop-point")
                 print(f"  → no contour at angle {trial_ang:.1f}°")
@@ -817,7 +816,7 @@ class AirtankerAgent(mesa.Agent):
         try:
             d = Drop(self.model.fire, chosen_mid, chosen_ang, self.drop_capacity)
             d.run_drop()
-            drop_succeeded = True  # <-- NEW
+            drop_succeeded = True
             print("DROP RAN")
             self.model.notify_drop(self)
 
@@ -828,7 +827,7 @@ class AirtankerAgent(mesa.Agent):
 
             # Drop failed BEFORE re_run; if we merged any GC cells, re_run once now:
             if gc_flushed > 0 and not drop_succeeded:
-                self.model.fire.re_run(self.model.fire.fuel_model)  # <-- NEW
+                self.model.fire.re_run(self.model.fire.fuel_model)
             self._skip_current_drop("invalid drop rectangle")
             return
 
