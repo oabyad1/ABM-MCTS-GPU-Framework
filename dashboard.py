@@ -1,11 +1,6 @@
-# truth_dashboard.py
-#
-# A single-file Panel dashboard that lets you
-#   1. choose all fire-model parameters once,
-#   2. lock them in with “Set Simulation Parameters”,
-#   3. run/pause Monte-Carlo Tree-Search loops indefinitely
-#      without ever rebuilding the model (so the tree stays intact).
-#
+"""dashboard.py
+A single-file Panel dashboard that lets you visualize the building of an MCTS tree through one entire simulation
+"""
 
 import panel as pn
 import threading
@@ -23,7 +18,9 @@ from wind_schedule_utils import load_wind_schedule_from_csv_mean
 from wind_schedule_utils import load_wind_schedule_from_csv_sigma
 from wind_schedule_utils import _print_schedule
 import plotly.io as pio
-
+from plotly.subplots import make_subplots
+import plotly.graph_objects as go
+from scipy.stats import norm
 # ── use Kaleido & give it defaults ──────────────────────────────
 # pio.kaleido.scope.default_format = "png"
 # pio.kaleido.scope.default_scale  = 2          # 2× pixel density
@@ -49,9 +46,7 @@ NUM_WIND_ROSES = 16          # ← change this to any number you like
 ROSES_PER_ROW  = 4          # 4 keeps each row narrow enough for most screens
 # ───────────────────────────────────────────────────────────────
 
-# ────────────────────────────────────────────────────────────────
-# CUDA / CuPy warm-up – do this ONCE when the process starts
-# ────────────────────────────────────────────────────────────────
+
 import cupy as cp, time
 # import cupy as cp
 # from surrogate_fire_model_CK2_multi_phase import SurrogateFireModelROS_CK2Multi
@@ -149,9 +144,7 @@ set_truth_schedule(truth_schedule)
 # ────────────────────────────────────────────────────────────────
 def _print_schedule_tuples(schedule: list[tuple], *, title=""):
     """
-    Pretty-print a (start, end, speed, dir) list.
-    Times are minutes since t = 0; speed & dir are whatever units
-    you store (kt, m s⁻¹, deg true …).
+    Print a wind schedule
     """
     import pandas as pd
     if title:
@@ -163,7 +156,6 @@ def _print_schedule_tuples(schedule: list[tuple], *, title=""):
 
 
 # ───── Forecast-evolution helpers ───────────────────────────────────────────
-# ── put this near the top of truth_dashboard.py (after the imports) ─────────
 def _debug_dump_schedule(model, *, header=""):
     """Pretty-print the entire wind-schedule of *model*."""
     import pandas as pd
@@ -239,7 +231,6 @@ def _build_evolution_fig() -> go.Figure | None:
 
     # ---------- speed panel -------------------------------------------------
     for iss, sub in df.groupby("issue"):
-        # 🔽 NEW — unwrap 0/360° jumps so Plotly won't draw long diagonals
         sub = sub.copy()  # keep the original intact
         sub["mu_d_unwrap"] = (
                 np.unwrap(np.deg2rad(sub.mu_d), discont=np.pi) * 180 / np.pi
@@ -316,117 +307,6 @@ def update_forecast_evo_panel():
     if fig is not None:
         forecast_evo_panel.object = fig
 
-
-
-###################################################################################################
-###################################################################################################
-###################################################################################################
-################# -----PROBABILITY APPROAH ---- #####################################################
-from plotly.subplots import make_subplots
-import plotly.graph_objects as go
-from scipy.stats import norm
-
-# _BANDS       = [0.674, 1.036, 1.645]                 # 50 %, 70 %, 90 %
-# _BAND_NAMES  = ["50 %", "70 %", "90 %"]
-# _BAND_COLORS = ["rgba(255,200,0,0.60)",
-#                 "rgba(255,120,0,0.40)",
-#                 "rgba(255, 60,0,0.25)"]
-#
-# def _fan_chart_from_forecast(fore_df: pd.DataFrame, *, now_min: int) -> go.Figure:
-#     """
-#     One stacked figure:
-#       row 1 → wind-speed fan (μ ± z·σ)
-#       row 2 → wind-direction fan, unwrapped
-#     Only the **latest** forecast is shown.
-#     The y-axes are auto-zoomed to the 90 % band (+5 % padding).
-#     """
-#     latest = fore_df.copy()
-#     latest = latest[latest.end_min > now_min]          # future only
-#     latest["mid"] = 0.5 * (latest.start_min + latest.end_min)
-#     latest["dir_mu_unwrap"] = (
-#         np.unwrap(np.deg2rad(latest.dir_mean), discont=np.pi) * 180/np.pi
-#     )
-#
-#     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
-#                         vertical_spacing=0.08,
-#                         subplot_titles=("wind-speed – probability fan chart",
-#                                         "wind-direction – probability fan chart"))
-#
-#     # ── speed panel ──────────────────────────────────────────────
-#     for z, name, col in zip(_BANDS[::-1], _BAND_NAMES[::-1], _BAND_COLORS[::-1]):
-#         hi = latest.speed_mean + z*latest.speed_std
-#         lo = latest.speed_mean - z*latest.speed_std
-#         fig.add_trace(
-#             go.Scatter(x=pd.concat([latest.mid, latest.mid[::-1]]),
-#                        y=pd.concat([hi,         lo[::-1]]),
-#                        fill="toself", line=dict(width=0),
-#                        fillcolor=col,
-#                        name=f"{name} band",
-#                        legendgroup="spd",
-#                        showlegend=(name == "90 %")),
-#             row=1, col=1)
-#     fig.add_trace(go.Scatter(x=latest.mid, y=latest.speed_mean,
-#                              mode="lines", line=dict(width=2, color="white"),
-#                              name="μ (latest)"),
-#                   row=1, col=1)
-#
-#     # ── direction panel ─────────────────────────────────────────
-#     for z, col in zip(_BANDS[::-1], _BAND_COLORS[::-1]):
-#         hi = latest.dir_mu_unwrap + z*latest.dir_std
-#         lo = latest.dir_mu_unwrap - z*latest.dir_std
-#         fig.add_trace(
-#             go.Scatter(x=pd.concat([latest.mid, latest.mid[::-1]]),
-#                        y=pd.concat([hi,         lo[::-1]]),
-#                        fill="toself", fillcolor=col,
-#                        line=dict(width=0), showlegend=False),
-#             row=2, col=1)
-#     fig.add_trace(go.Scatter(x=latest.mid, y=latest.dir_mu_unwrap,
-#                              mode="lines", line=dict(width=2, color="white"),
-#                              showlegend=False),
-#                   row=2, col=1)
-#
-#     # ── dynamic y-ranges ────────────────────────────────────────
-#     # 90 % band = the widest one (z = 1.645)
-#     sp_hi = (latest.speed_mean + _BANDS[-1]*latest.speed_std).max()
-#     sp_lo = max(0, (latest.speed_mean - _BANDS[-1]*latest.speed_std).min())
-#     pad_s = 0.05 * (sp_hi - sp_lo)
-#     fig.update_yaxes(range=[sp_lo - pad_s, sp_hi + pad_s], title_text="m s⁻¹",
-#                      row=1, col=1)
-#
-#     dir_hi = (latest.dir_mu_unwrap + _BANDS[-1]*latest.dir_std).max()
-#     dir_lo = (latest.dir_mu_unwrap - _BANDS[-1]*latest.dir_std).min()
-#     pad_d  = 0.05 * (dir_hi - dir_lo)
-#     fig.update_yaxes(range=[dir_lo - pad_d, dir_hi + pad_d], title_text="deg",
-#                      row=2, col=1)
-#
-#     # ── cosmetics ───────────────────────────────────────────────
-#     fig.update_xaxes(title_text="minutes from now", row=2, col=1)
-#     fig.update_layout(template="plotly_dark",
-#                       height=440,                    # ← bigger!
-#                       margin=dict(t=50, l=8, r=8, b=0),
-#                       legend=dict(orientation="h", y=-0.20,
-#                                   title="central-probability band"))
-#     return fig
-#
-#
-# # ── panel updater (unchanged usage) ─────────────────────────────
-# def update_fan_plot_panel(forecast_df: pd.DataFrame, now_minute: int):
-#     """Replace *wind_rose_panel* with the new fan chart."""
-#     global wind_rose_panel
-#     fig = _fan_chart_from_forecast(forecast_df, now_min=now_minute)
-#     wind_rose_panel.objects = [
-#         pn.pane.Markdown(
-#             "### <span style='color:white'>Wind forecast fan chart "
-#             "(μ ± σ bands, next 8 h)</span>",
-#             sizing_mode="stretch_width"),
-#         pn.pane.Plotly(fig, height=540, sizing_mode="stretch_width"),
-#     ]
-
-
-###################################################################################################
-###################################################################################################
-###################################################################################################
-################# -----SIGMA  APPROAH ---- #####################################################
 
 
 
@@ -531,66 +411,17 @@ def update_fan_plot_panel(forecast_df: pd.DataFrame, now_minute: int) -> None:
 
 
 
-# ────────────────────────────────────────────────────────────────
-# Globals & synchronisation primitives
-# ────────────────────────────────────────────────────────────────
 pause_event           = threading.Event()   # “soft” pause (does NOT kill the thread)
 pause_event.set()                            # dashboard launches in the paused state
 simulation_stop_event = threading.Event()   # used when we rebuild a fresh model
 sim_thread            = None                # handle of the background loop
 truth_model           = None                # will be constructed by the user
 
-# # ────────────────────────────────────────────────────────────────
-# # Wind-rose helpers (fake data for now)
-# # ────────────────────────────────────────────────────────────────
-# def generate_fake_wind_data(hour: int) -> pd.DataFrame:
-#     directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']
-#     speeds     = ['0-5', '5-10', '10-15', '15-20']
-#     rows       = []
-#     for d in directions:
-#         for s in speeds:
-#             rows.append(
-#                 dict(direction=d,
-#                      strength=s,
-#                      frequency=np.random.uniform(0, 15),   # fake probability
-#                      hour=f'Hour {hour}')
-#             )
-#     return pd.DataFrame(rows)
-#
-# speed_bins = ['0-5', '5-10', '10-15', '15-20']
-# color_map  = {
-#     '0-5'   : px.colors.sequential.Plasma_r[0],
-#     '5-10'  : px.colors.sequential.Plasma_r[3],
-#     '10-15' : px.colors.sequential.Plasma_r[6],
-#     '15-20' : px.colors.sequential.Plasma_r[9],
-# }
-#
-# def make_wind_rose(hour: int, *, show_legend=True):
-#     df = generate_fake_wind_data(hour)
-#     df['frequency'] = 100 * df['frequency'] / df['frequency'].sum()
-#     df['strength']  = pd.Categorical(df['strength'], categories=speed_bins, ordered=True)
-#
-#     fig = px.bar_polar(
-#         df, r="frequency", theta="direction", color="strength",
-#         template="plotly_dark",
-#         category_orders={"strength": speed_bins},
-#         color_discrete_map=color_map,
-#     )
-#     fig.update_layout(
-#         title=f"Wind Forecast – Hour {hour}",
-#         showlegend=show_legend,
-#         margin=dict(t=40, l=10, r=10, b=10),
-#         height=300,
-#         polar=dict(radialaxis=dict(ticksuffix="%", showticklabels=True))
-#     )
-#     return pn.pane.Plotly(fig, sizing_mode='stretch_width', height=300)
-# ────────────────────────────────────────────────────────────────
-# Wind-rose helpers (real μ/σ from the forecast)
-# ────────────────────────────────────────────────────────────────
+
 import matplotlib
 matplotlib.use("Agg")                    # safe for headless servers
 
-# speed bins (kt or mph – whatever your µ/σ units are)
+# speed bins (kt or mph)
 SPEED_BIN_EDGES  = [0, 5, 10, 15, 20, 999]
 SPEED_BIN_LABELS = ["0-5", "5-10", "10-15", "15-20", "20+"]
 
@@ -757,42 +588,7 @@ def make_wind_rose(table, title, *, show_legend=False):
     )
     return pn.pane.Plotly(fig, height=260, sizing_mode="stretch_width")
 
-# def update_wind_rose_panel(forecast_df, now_minute):
-#     """
-#     Replace the global wind_rose_panel content with 4 roses covering:
-#       now→+120, +120→+240, +240→+360, +360→+480 minutes.
-#     """
-#     global wind_rose_panel
-#     roses = []
-#     for k in range(4):
-#         w_start = now_minute + k * decision_interval
-#         w_end   = w_start   + decision_interval
-#         tbl = wind_rose_from_forecast(forecast_df, w_start, w_end)
-#         roses.append(make_wind_rose(
-#             tbl,
-#             title=f"{w_start}-{w_end} min",
-#             show_legend=(k == 3)          # legend only on the last plot
-#         ))
-#     wind_rose_panel.objects = [           # wipe & refill
-#         pn.pane.Markdown(
-#             "### <span style='color:white'>Wind Forecasts (next 8 h)</span>",
-#             sizing_mode="stretch_width"),
-#         pn.Row(*roses, sizing_mode="stretch_width"),
-#     ]
-# def update_wind_rose_panel(forecast_df, now_minute):
-#     global wind_rose_panel
-#     plots = []
-#     for k in range(4):
-#         w_start = now_minute + k * decision_interval
-#         w_end   = w_start   + decision_interval
-#         plots.append(probability_wind_rose(forecast_df, w_start, w_end))
-#
-#     wind_rose_panel.objects = [
-#         pn.pane.Markdown(
-#             "### <span style='color:white'>Wind-draw probability (next 8 h)</span>",
-#             sizing_mode="stretch_width"),
-#         pn.Row(*plots, sizing_mode="stretch_width"),
-#     ]
+
 def update_wind_rose_panel(forecast_df, now_minute,
                            *, n_roses: int = NUM_WIND_ROSES) -> None:
     """
@@ -905,7 +701,6 @@ decision_interval_widget   = pn.widgets.IntInput  (name='Decision Interval (min)
 mcts_iter_widget           = pn.widgets.IntInput  (name='MCTS Iterations',         value=mcts_iterations,   start=1)
 mcts_depth_widget          = pn.widgets.IntInput  (name='MCTS Max Depth',          value=mcts_max_depth,    start=1)
 exploration_constant_widget= pn.widgets.FloatInput(name='Exploration Constant (UCB)', value=exploration_constant, step=0.1, start=0)
-# ── NEW widgets ───────────────────────────────────────────────
 auto_iter_toggle = pn.widgets.Checkbox(name='Auto-set MCTS iterations')
 iters_for_1_asset = pn.widgets.IntInput(name='Iters if 1 asset', value=50,  start=1)
 iters_for_2_assets = pn.widgets.IntInput(name='Iters if 2 assets', value=100, start=1)
@@ -923,8 +718,8 @@ iters_for_3_assets = pn.widgets.IntInput(name='Iters if 3 assets', value=200, st
 mcts_inputs_panel = pn.Column(
     pn.pane.Markdown("### MCTS Inputs"),
     decision_interval_widget,
-    mcts_iter_widget,            # ← kept so you can still type manually
-    auto_iter_toggle,            # ← NEW
+    mcts_iter_widget,
+    auto_iter_toggle,
     iters_for_1_asset,
     iters_for_2_assets,
     iters_for_3_assets,
@@ -1035,7 +830,7 @@ def plot_mcts_tree_plotly(root):
             build(child)
     build(root)
 
-    pos = hierarchy_pos_tree(G, id(root))  # your custom layout
+    pos = hierarchy_pos_tree(G, id(root))
 
     # edges
     edge_x, edge_y = [], []
@@ -1086,7 +881,6 @@ def plot_mcts_tree_plotly(root):
     return fig
 
 
-# ★ NEW ------------------------------------------------------------------
 def end_simulation(model: WildfireModel):
     """
     Final-ise the run once no more decisions can be made.
@@ -1150,7 +944,6 @@ def simulation_loop(model: WildfireModel):
     next_decision_time = model.time          # ← start planning right away
     overall_limit      = model.overall_time_limit
 
-    # ⇩ NEW FORECAST ----------------------------------------------------
     if schedule_enabled:
         forecast_df = get_forecast(current_minute=int(model.time))
         model.latest_forecast_df = forecast_df
@@ -1170,37 +963,32 @@ def simulation_loop(model: WildfireModel):
         if simulation_stop_event.is_set():
             break
 
-        # ────────────────────────────────────────────────────────────
-        # NEW ► If we don’t have a *full* decision slice left, jump
-        #       straight to the end (or break the loop).
-        #       This prevents launching an MCTS tree that can’t expand.
-        # ----------------------------------------------------------------
-        # if model.time >= overall_limit - decision_interval:  # ← NEW
+
+        # if model.time >= overall_limit - decision_interval:
         print("MCTS expansion time ", model.time)
         print("overall_limit ", overall_limit)
-        # if model.time >= overall_limit - decision_interval:  # ← NEW
+        # if model.time >= overall_limit - decision_interval:
         #     print("[SIM] Not enough time for another decision slice; "
-        #           "fast-forwarding to the end.")  # ← NEW
-        #     while model.time < overall_limit and model.step():  # ← NEW
-        #         pass  # ← NEW
-        #     break  # ← NEW
+        #           "fast-forwarding to the end.")
+        #     while model.time < overall_limit and model.step():
+        #         pass
+        #     break
 
         # ────────────────────────────────────────────────────────────
         # 0 · leave loop if there is *no* full decision slice left
         # ────────────────────────────────────────────────────────────
-        if model.time >= overall_limit - decision_interval:  # unchanged
-            print("[SIM] < 1 decision slice left – terminating.")  # ★ NEW
-            end_simulation(model)  # ★ NEW
-            break  # ★ NEW
+        if model.time >= overall_limit - decision_interval:
+            print("[SIM] < 1 decision slice left – terminating.")
+            end_simulation(model)
+            break
         # ────────────────────────────────────────────────────────────
         # ────────────────────────────────────────────────────────────
 
-        # ─── 1 · (re)plan BEFORE advancing one tick ───────────────────────
         if model.time >= next_decision_time:
             # ⇩ update forecast for this decision boundary
             # forecast_df = get_forecast(current_minute=int(model.time))
             # model.latest_forecast_df = forecast_df
-            # record_forecast(int(model.time), forecast_df)  # NEW
+            # record_forecast(int(model.time), forecast_df)
             # update_forecast_evo_panel()
             # update_wind_rose_panel(forecast_df, int(model.time))
 
@@ -1309,13 +1097,10 @@ def simulation_loop(model: WildfireModel):
             current_fig     = plot_mcts_tree_plotly(root)
             tree_panel.object = current_fig
 
-            # # ─── NEW: export the figure to PNG (uses Kaleido) ──────────────
             # timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
             # img_name = f"mcts_tree_t{int(model.time)}m_{timestamp}.png"
             # current_fig.write_image(img_name, scale=2)  # 2× pixel density
 
-            #   → file is saved alongside truth_dashboard.py; adjust path if needed
-            # clickable history entry
             idx = len(history_entries) + 1
             btn = pn.widgets.Button(
                 name=f"#{idx} | t={model.time:.0f} min | best={avg_best:.2f}",
@@ -1324,24 +1109,6 @@ def simulation_loop(model: WildfireModel):
             mcts_history_panel.append(pn.Column(btn, stats_md, width=300))
             history_entries.append((btn, current_fig))
 
-
-            # TODO
-            #NEED TO REMOVE
-            # ---------------------------------------------------------------
-            # 1)  (re)plan fresh start/finish for every sector that is NOT yet
-            #     contained – the planner returns a dict {sec_idx -> {...}}
-            #
-            # open_secs = [s for s in range(4)  # 0–3 sectors
-            #              if not model.is_sector_contained(s)]
-            # new_plan = model.groundcrew_planner.get_planned_cells(open_secs)
-            #
-            # # 2)  translate that into the sector-action dict the crew logic expects
-            # #     {'GroundCrewAgent': (sec+1, sec+1, …),   # 1-based !
-            # #      'FireHerc'       : (... airtankers ...)}
-            # #
-            # crew_actions = tuple(sec + 1 for sec in open_secs)  # 1-based
-            # best_child.action.setdefault("GroundCrewAgent", crew_actions)
-
             # apply action to the real model
             simulate_in_place(model, best_child.action, duration=decision_interval)
             map_panel.object = model.plot_fig
@@ -1349,7 +1116,6 @@ def simulation_loop(model: WildfireModel):
             next_decision_time += decision_interval
             continue              # ← skip the extra one‑minute tick this loop
 
-        # ─── 2 · no planning due → advance one ordinary tick ──────────────
         if not model.step():      # returns False on termination
             break
 
@@ -1382,7 +1148,7 @@ def apply_params(event):
     truth_model = build_model_from_widgets()
     truth_model.latest_forecast_df = None  # disable forecasts
 
-    # ‹NEW› Compute the baseline fire score for normalization.
+    # Compute the baseline fire score for normalization.
     # If a wind_schedule is provided (forecast enabled), compute a baseline using the mean-only forecast.
     if truth_model.wind_schedule is not None:
         forecast_df = get_forecast(current_minute=0)
@@ -1450,7 +1216,7 @@ def run_sim(event):
     pause_event.clear()
 
 def pause_sim(event):
-    """Soft pause; thread keeps running but does no work."""
+    """Soft pause."""
     pause_event.set()
 
 # connect buttons

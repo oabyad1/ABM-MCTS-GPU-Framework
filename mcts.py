@@ -3,7 +3,6 @@ mcts.py
 
 This script implements a Monte Carlo Tree Search (MCTS) for a wildfire simulation.
 The objective is to minimize the fire score (area burned), so the reward is defined as -fire_score.
-It now also outputs an image that shows the MCTS tree with the number of visits and average rewards at each node.
 Additionally, it records detailed timing stats (expansion time, rollout time, node execution time, and iteration)
 which are exported in a JSON file.
 """
@@ -38,9 +37,6 @@ import hashlib, json, pathlib
 DUMP_SCHEDULES = False
 
 #For Naming
-# ──────────────────────────────────────────────────────────────────────
-#  Stable ordinals:  UID → 1-based “index inside its own type”
-# ──────────────────────────────────────────────────────────────────────
 from functools import lru_cache
 
 def _roster_signature(model) -> tuple:
@@ -60,10 +56,9 @@ def ordinal_map(model):
 
 #ROLLOUT SAVING STUFF
 
-# ─── add near the top of mcts.py (right after the other imports) ──────────────
-from pathlib import Path           # NEW
-import sys                         # NEW
-# -----------------------------------------------------------------------------
+from pathlib import Path
+import sys
+
 def count_expandable_assets(model) -> int:
     """
     Return how many **asset INSTANCES** currently have at least one
@@ -84,7 +79,6 @@ def count_expandable_assets(model) -> int:
     return min(c, 3)            # we only map up to three
 
 
-# ────────────────────────────── NEW HELPER ───────────────────────────────────
 def _save_rollout_snapshot(sim_state, *, tag=""):
     """
     Dump a high-res PNG of the fire at sim_state.time.

@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-"""
-analyze_mcts_by_depth_pretty.py
 
-What this does:
-  • Cleans/normalizes your summary CSV (requires 'rollout_depth_adjustment')
-  • Filters to MCTS only
+"""
+This script post processes the results from the rollout depth experiment
+
+  • Filters to MCTS results only
   • Computes composite = w_area*norm_area + w_bldg*norm_bldg
   • Groups by rollout_depth_adjustment
   • Outputs:
@@ -16,13 +14,7 @@ What this does:
       - plots/mcts_runtime_vs_depth_scatter_colored.png (if 'seconds' present)
       - plots/mcts_by_depth_stats.csv
 
-Presentation tweaks:
-  • No plot titles; legend sits where the title would be
-  • Legend entries are random seeds
-  • Bold, fully enclosed axes box
-  • Composite plots show a baseline=1.0 line; runtime plots do NOT
-  • Runtime Y label explicitly "Runtime (minutes)"
-  • Larger scatter points
+
 """
 
 from pathlib import Path
@@ -30,11 +22,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# -------- Settings --------
-# CSV_PATH = Path("summary_depth_camp_high_final.csv")   # <- change if needed
-# CSV_PATH = Path("summary_depth_camp_med_final.csv")   # <- change if needed
-CSV_PATH = Path("summary_depth_marshall_high_final.csv")   # <- change if needed
-# CSV_PATH = Path("summary_depth_marshall_med_final.csv")   # <- change if needed
+
+# CSV_PATH = Path("summary_depth_camp_high_final.csv")
+# CSV_PATH = Path("summary_depth_camp_med_final.csv")
+CSV_PATH = Path("summary_depth_marshall_high_final.csv")
+# CSV_PATH = Path("summary_depth_marshall_med_final.csv")
 
 # CSV_PATH = Path("summary_depth_med.csv")
 # CSV_PATH = Path("summary_depth_high.csv")
@@ -52,7 +44,7 @@ REQUIRED_COLS = {
     "baseline_area", "baseline_buildings", "rollout_depth_adjustment"
 }
 
-# -------- Matplotlib styling --------
+
 plt.rcParams.update({
     "figure.dpi": 160,
     "savefig.dpi": 200,
@@ -67,7 +59,6 @@ plt.rcParams.update({
 })
 
 
-# -------- Helpers --------
 def sem_or_std(x_like) -> float:
     x = pd.Series(x_like).dropna()
     if len(x) <= 1:
@@ -131,7 +122,7 @@ def load_and_clean(csv_path: Path,
 
     return df
 
-# -------- Plotting helpers --------
+
 def _enclose_bold_box(ax):
     for spine in ax.spines.values():
         spine.set_visible(True)
@@ -258,7 +249,7 @@ def scatter_points_colored_by_seed(
     fig.savefig(outpath, bbox_inches="tight")
     plt.close(fig)
 
-# -------- Main --------
+
 def main():
     OUTDIR.mkdir(parents=True, exist_ok=True)
 
@@ -368,7 +359,6 @@ def main():
             show_baseline=False,
         )
 
-        # Scatter: per-seed minutes vs depth (plain; NO baseline line)
         scatter_points_basic(
             xs,
             per_seed_mins,
@@ -379,7 +369,6 @@ def main():
             marker_size=52,  # larger circles
         )
 
-        # Scatter: colored by seed; legend shows seeds; NO baseline line
         scatter_points_colored_by_seed(
             xs,
             per_seed_mins,
