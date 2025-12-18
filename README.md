@@ -111,27 +111,51 @@ python run_all_strategies_batch.py --schedule wind_schedule_esper_high.csv --run
 
 ---
 
-## 🧪 Project Structure
+## 🧪 Main Scripts
 
-| File / Folder                     | Description                                        |
-|----------------------------------|----------------------------------------------------|
-| `FIRE_MODEL_CUDA.py`             | GPU fire spread logic (CuPy-based).                |
-| `model.py`                       | Main Mesa wildfire environment.                   |
-| `mcts.py`                        | MCTS planner implementation.                      |
-| `airtankeragent.py`              | Airtanker agent behavior.                         |
-| `groundcrew.py`                  | Ground crew agent logic.                          |
-| `dashboard.py`                   | Interactive web GUI with Panel.                   |
-| `run_all_strategies_batch.py`   | Batch simulation runner.                          |
-| `wind_schedule_utils.py`        | Helpers for handling wind forecasts.              |
-| `uncertainty_quantification.py` | Tool for uncertainty analysis with visual plots.  |
+| File / Folder                   | Description                                                  |
+|---------------------------------|--------------------------------------------------------------|
+| `FIRE_MODEL_CUDA.py`            | GPU fire spread arrival time solver.                         |
+| `rothermal_ROS_kernal.py`       | Rate of spread solver that uses empirical Rothermel rules    |
+| `model.py`                      | Main Mesa wildfire environment.                              |
+| `mcts.py`                       | MCTS planner implementation.                                 |
+| `airtankeragent.py`             | Airtanker agent behavior.                                    |
+| `groundcrew.py`                 | Ground crew agent logic.                                     |
+| `dashboard.py`                  | Interactive web GUI with Panel.                              |
+| `run_all_strategies_batch.py`   | Batch simulation runner.                                     |
+| `wind_schedule_utils.py`        | Helpers for handling wind forecasts.                         |
+| `uncertainty_quantification.py` | Tool for uncertainty analysis with visual plots.             |
+
+---
+## 🧪 Other Scripts
+
+| File / Folder                                       | Description                                                                                                                                                                         |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `airtanker_agents/CL415_agent.py`                   | CL-415 water scooping airtanker agent configuration (inherits ScooperAgent).                                                                                                        |
+| `airtanker_agents/Dash8_400MRE_agent.py`            | Dash 8-400 MRE airtanker agent configuration (heavy turboprop water bomber).                                                                                                        |
+| `airtanker_agents/FireHerc_agent.py`                | “FireHerc” firefighting C-130 airtanker agent configuration (night-capable ops).                                                                                                    |
+| `airtanker_agents/at_802f_agent.py`                 | AT-802F single-engine airtanker agent configuration (Air Tractor Fire Boss).                                                                                                        |
+| `airtanker_agents/c130j_agent.py`                   | C-130J airtanker agent configuration (large air tanker parameters).                                                                                                                 |
+| `airtanker_agents/scooper_agent.py`                 | Base class for water-scooping airtankers (supports lake refill operations).                                                                                                         |
+| `compare_reward_wins.py`                            | Compares how often each strategy achieves the lowest composite score across two scenarios, outputting a win-count chart and CSV.                                                    |
+| `drops_surrogate.py`                                | Defines surrogate-model retardant drop behavior (drop placement and effects on fire spread).                                                                                        |
+| `fireline_abm.py`                                   | Utility for computing fireline (containment line) geometry per sector in the ABM.                                                                                                   |
+| `FireModel_AT_comparisons.py`                       | Compares GPU surrogate fire spread vs FARSITE under dynamic winds; outputs side-by-side arrival maps, confusion matrices, time-series plots, and metrics.                           |
+| `forecast_provider.py`                              | Wind-forecast generator consistent with the actual truth schedule, providing updated forecast tables to the MCTS.                                                                   |
+| `optimization_slope_loop.py`                        | Calibrates a slope factor by minimizing differences between FARSITE and the GPU fire model on uniform-fuel landscapes (uses landscapes from `slope_preprocessing.py`).              |
+| `raws_to_sched.py`                                  | Builds a binned 120-min forecast/uncertainty table from RAWS weather data (outputs columns: start_min, end_min, speed_mean/σ, dir_mean/σ).                                          |
+| `results_postprocessing.py`                         | Post-processes batch run results from `summary.csv`: drops invalid runs, normalizes area/building metrics by baseline, computes composite scores, and generates summary plots/CSVs. |
+| `results_postprocessing_depth.py`                   | Post-processes MCTS rollout-depth experiment results: filters to MCTS runs, computes composite performance vs rollout depth, and outputs depth-comparison plots/CSVs.               |
+| `slope_preprocessing.py`                            | Prepares landscapes with a constant fuel model across the area (used to generate inputs for slope calibration experiments).                                                         |
+| `visualization.py`                                  | Interactive visualization script to run and observe a single wildfire simulation in real-time (no MCTS tree search).                                                                |
 
 ---
 
 ## Benchmark Heuristic Allocation Strategies
 
-To benchmark the performance of the MCTS-based controller, the framework includes a set of **heuristic allocation strategies** that represent common tactical decision rules in wildfire suppression. All strategies operate within the same simulation environment, asset constraints, and decision interval (**Δt = 120 minutes**) and are implemented as standalone, non-plotting scripts for scalable batch experimentation.
+To benchmark the performance of the MCTS-based controller, the framework includes a set of **heuristic allocation strategies** that represent some common tactical decision rules that could be implemented for wildfire suppression. All strategies operate within the same simulation environment, asset constraints, and decision interval (**Δt = 120 minutes**) and are implemented as standalone, non-plotting scripts for scalable batch experimentation.
 
-These heuristic policies are intentionally simpler than the MCTS controller and are designed to isolate the value of different information signals (wind, fire spread, and structural exposure) and decision philosophies.
+These heuristic policies are intentionally simpler than the MCTS controller and are designed to isolate the value of different information signals (wind, rate of fire spread, and structural exposure) and decision philosophies.
 
 ### Strategy Descriptions
 
