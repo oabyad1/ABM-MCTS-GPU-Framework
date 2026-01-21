@@ -1,0 +1,2059 @@
+
+⚑ background sched
+ start  end    speed      dir
+     0  120   30.000    5.000
+   120  240   35.000   25.000
+   240  360   40.000   25.000
+   360  480   50.000   15.000
+   480  600   30.000    2.500
+   600  720   38.000    5.000
+   720  840   28.000    0.000
+   840  960   30.000    0.000
+   960 1080   30.000    0.000
+  1080 1200   28.000    2.500
+  1200 1320   28.000    5.000
+  1320 1440   30.000   15.000
+  1440 1560   30.000    5.000
+  1560 1680   30.000    7.500
+  1680 1800   30.000   10.000
+  1800 1920   30.000   10.000
+  1920 2040   30.000   15.000
+  2040 2160   17.500    5.000
+  2160 2280   12.000    5.000
+  2280 2400   12.000    5.000
+  2400 2520   13.000    5.000
+  2520 2640    7.000    0.000
+  2640 2760    6.000    5.000
+  2760 2880    6.000   10.000
+  2880 3000    7.000   10.000
+  3000 3000    1.000    0.000
+
+⚑ hard σ truth schedule
+ start  end    speed      dir
+     0  120   30.000    5.000
+   120  240   35.000   25.000
+   240  360   40.000   25.000
+   360  480   50.000   15.000
+   480  600   30.000    2.500
+   600  720   38.000    5.000
+   720  840   28.000    0.000
+   840  960   30.000    0.000
+   960 1080   30.000    0.000
+  1080 1200   28.000    2.500
+  1200 1320   28.000    5.000
+  1320 1440   30.000   15.000
+  1440 1560   30.000    5.000
+  1560 1680   30.000    7.500
+  1680 1800   30.000   10.000
+  1800 1920   30.000   10.000
+  1920 2040   30.000   15.000
+  2040 2160   17.500    5.000
+  2160 2280   12.000    5.000
+  2280 2400   12.000    5.000
+  2400 2520   13.000    5.000
+  2520 2640    7.000    0.000
+  2640 2760    6.000    5.000
+  2760 2880    6.000   10.000
+  2880 3000    7.000   10.000
+  3000 3000    1.000    0.000
+RUN SEED: 3883358209
+Starting ROS-weighted simulation (headless mode)...
+Using multi-phase propagation with wind schedule.
+WildfireModel: Bounds: BoundingBox(left=-14935.007954473422, bottom=-13304.5080370525, right=14944.992045526578, top=13335.4919629475)
+Checking Mesa Space Dimensions: Width = 49880.0, Height = 46640.0
+Buffered Bounds: BoundingBox(left=-24935.00795447342, bottom=-23304.5080370525, right=24944.99204552658, top=23335.4919629475)
+Original CRS: EPSG:26910
+Available bases: [(20000, 20000)]
+Corrected position: (20000, 20000)
+[GC#01] spawned at cell (444, 498) with walk_ticks=1
+[GC#02] spawned at cell (444, 498) with walk_ticks=1
+[forecast_provider] get_forecast() init   DT=120 min, TAPER_HR=8, ASSIM_HR=8
+  SPEED_STD_MIN=1.0, SPEED_STD_MAX=5.0
+  DIR_STD_MIN=20.0,   DIR_STD_MAX=60.0
+
+
+[ROS-ALLOC]  t = 240 min
+  • sector 0:  ROS =    16.0  ->  weight = 0.231
+  • sector 1:  ROS =    10.1  ->  weight = 0.146
+  • sector 2:  ROS =     3.5  ->  weight = 0.050
+  • sector 3:  ROS =     4.6  ->  weight = 0.066
+  • sector 4:  ROS =    14.3  ->  weight = 0.206
+  • sector 5:  ROS =    20.9  ->  weight = 0.302
+  Ground-crew ranking  => [5, 0, 4, 1, 3, 2]
+simulating in place
+no completed anchors found → making NEW dynamic START
+
+— after _record_anchor(bdy=5, role=start, cell=(485, 509), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  — <none>
+b00 finish — <none>
+b01 start  — <none>
+b01 finish — <none>
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  rc=(485, 509)  t=240.0  completed=False  world=(350.0, -1229.5)
+b05 finish — <none>
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=0, role=finish, cell=(451, 547), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  — <none>
+b00 finish rc=(451, 547)  t=240.0  completed=False  world=(1490.0, -209.5)
+b01 start  — <none>
+b01 finish — <none>
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  rc=(485, 509)  t=240.0  completed=False  world=(350.0, -1229.5)
+b05 finish — <none>
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 5: start@bdy5 (485, 509)   finish@bdy0 (451, 547)
+[GC#01] → sector 5  start (485, 509)  finish (451, 547)
+no completed anchors found → making NEW dynamic START
+
+— after _record_anchor(bdy=0, role=start, cell=(451, 543), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 543)  t=240.0  completed=False  world=(1370.0, -209.5)
+b00 finish rc=(451, 547)  t=240.0  completed=False  world=(1490.0, -209.5)
+b01 start  — <none>
+b01 finish — <none>
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  rc=(485, 509)  t=240.0  completed=False  world=(350.0, -1229.5)
+b05 finish — <none>
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=1, role=finish, cell=(342, 552), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 543)  t=240.0  completed=False  world=(1370.0, -209.5)
+b00 finish rc=(451, 547)  t=240.0  completed=False  world=(1490.0, -209.5)
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=False  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  rc=(485, 509)  t=240.0  completed=False  world=(350.0, -1229.5)
+b05 finish — <none>
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 0: start@bdy0 (451, 543)   finish@bdy1 (342, 552)
+recording from register first pair
+
+— after _record_anchor(bdy=0, role=start, cell=(451, 547), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=False  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish — <none>
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish — <none>
+=== end ===
+
+— end dump —
+
+recording from register first pair
+
+— after _record_anchor(bdy=5, role=finish, cell=(485, 509), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=False  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish — <none>
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=False  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[SYNC] GC#01 sect5 START b0 (451, 547)  FINISH b5 (485, 509)
+recording from register first pair
+
+— after _record_anchor(bdy=1, role=finish, cell=(342, 552), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=False  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=False  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=False  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[SYNC] GC#02 sect0 START b0 (451, 547)  FINISH b1 (342, 552)
+[GC#02] → sector 0  start (451, 547)  finish (342, 552)
+  → selected [622.61242946  42.45785127] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 0 – notifying ground crews
+[START] GC#01 using ANCHOR (unspecified source) → start (451, 547) on boundary 0
+Start:  (451, 547)
+Finish:  (485, 509)
+[GC#01] fire-line length 73 cells (123.3 min; full plan)
+
+— after _mark_anchor_completed(bdy=0, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=False  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=False  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=5, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=False  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[START] GC#02 using ANCHOR (unspecified source) → start (451, 547) on boundary 0
+Start:  (451, 547)
+Finish:  (342, 552)
+[GC#02] fire-line length 165 cells (296.9 min; full plan)
+
+— after _mark_anchor_completed(bdy=0, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=False  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=1, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+  → selected [870.4502942  129.43170294] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 0 – notifying ground crews
+[DEBUG] GC#02  attempting re-plan… remaining path = 165 cells
+[DEBUG] GC#02 start@(449, 549)  raw_arr=inf  now=301.0  mtt=nan  within_buffer=False
+[START] GC#02 using NEW (buffered by planner) → start (449, 549) on boundary 0
+Start:  (449, 549)
+Finish:  (342, 552)
+[GC#02] fire-line length 161 cells (278.7 min; full plan)
+[DEBUG] GC#02  new path accepted (length 161, ETA 278.7 min)
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [996.69323202 776.45104735] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 0 – notifying ground crews
+[DEBUG] GC#02  attempting re-plan… remaining path = 161 cells
+[DEBUG] GC#02 start@(441, 559)  raw_arr=inf  now=346.0  mtt=nan  within_buffer=False
+[START] GC#02 using NEW (buffered by planner) → start (441, 559) on boundary 0
+Start:  (441, 559)
+Finish:  (342, 552)
+[GC#02] fire-line length 143 cells (228.4 min; full plan)
+[DEBUG] GC#02  new path accepted (length 143, ETA 228.4 min)
+
+[ROS-ALLOC]  t = 360 min
+  • sector 0:  ROS =     4.9  ->  weight = 0.059
+  • sector 1:  ROS =     1.8  ->  weight = 0.022
+  • sector 2:  ROS =     8.8  ->  weight = 0.108
+  • sector 3:  ROS =    25.2  ->  weight = 0.308
+  • sector 4:  ROS =    33.3  ->  weight = 0.406
+  • sector 5:  ROS =     8.0  ->  weight = 0.097
+  Ground-crew ranking  => [4, 3, 2, 5, 0, 1]
+simulating in place
+  → selected [-1237.34923844  -259.92846889] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Sector contained  5
+
+— after _mark_anchor_completed(bdy=0, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=5, role=finish, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  — <none>
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[GC#01] Sector 5 contained → Standby
+  → selected [-1604.93137071  -651.36015044] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+
+[ROS-ALLOC]  t = 480 min
+  • sector 0:  ROS =     3.8  ->  weight = 0.052
+  • sector 1:  ROS =     4.0  ->  weight = 0.055
+  • sector 2:  ROS =     9.3  ->  weight = 0.126
+  • sector 3:  ROS =    27.4  ->  weight = 0.370
+  • sector 4:  ROS =    29.5  ->  weight = 0.398
+  Ground-crew ranking  => [4, 3, 2, 1, 0]
+simulating in place
+
+— after _record_anchor(bdy=5, role=start, cell=(485, 509), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish — <none>
+b05 start  rc=(485, 509)  t=480.0  completed=False  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=4, role=finish, cell=(603, 401), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(603, 401)  t=480.0  completed=False  world=(-2890.0, -4769.5)
+b05 start  rc=(485, 509)  t=480.0  completed=False  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 4: start@bdy5 (485, 509)   finish@bdy4 (603, 401)
+[GC#01] → sector 4  start (485, 509)  finish (603, 401)
+[START] GC#01 using ANCHOR (unspecified source) → start (485, 509) on boundary 5
+Start:  (485, 509)
+Finish:  (603, 401)
+[GC#01] WARNING: fire intercept at (600, 398) (burn_pen>0) – truncating path at idx 369.
+[GC#01] fire-line length 370 cells (982.8 min; ABORTED EARLY)
+
+— after _mark_anchor_completed(bdy=5, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(603, 401)  t=480.0  completed=False  world=(-2890.0, -4769.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=4, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(603, 401)  t=480.0  completed=True  world=(-2890.0, -4769.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_uncompleted(bdy=4, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(603, 401)  t=480.0  completed=False  world=(-2890.0, -4769.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+  → selected [-1928.35553748  -990.94508603] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [-2355.59492261 -1213.35183263] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Sector contained  0
+
+— after _mark_anchor_completed(bdy=0, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(603, 401)  t=480.0  completed=False  world=(-2890.0, -4769.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=1, role=finish, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  — <none>
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(603, 401)  t=480.0  completed=False  world=(-2890.0, -4769.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[GC#02] Sector 0 contained → Standby
+  → selected [-2892.4201396  -1184.65545992] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+
+[ROS-ALLOC]  t = 600 min
+  • sector 1:  ROS =    11.3  ->  weight = 0.135
+  • sector 2:  ROS =    24.8  ->  weight = 0.296
+  • sector 3:  ROS =    30.9  ->  weight = 0.369
+  • sector 4:  ROS =    16.8  ->  weight = 0.200
+  Ground-crew ranking  => [3, 2, 4, 1]
+simulating in place
+no completed anchors found → making NEW dynamic START
+
+— after _record_anchor(bdy=3, role=start, cell=(451, 300), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  rc=(451, 300)  t=600.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(603, 401)  t=480.0  completed=False  world=(-2890.0, -4769.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=4, role=finish, cell=(693, 350), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  rc=(451, 300)  t=600.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 3: start@bdy3 (451, 300)   finish@bdy4 (693, 350)
+[GC#02] → sector 3  start (451, 300)  finish (693, 350)
+  → selected [-3416.31978328 -1401.66179765] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+  → selected [-3821.99596985 -1191.15272335] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+  → selected [-4075.09314793  -162.64840375] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+
+[ROS-ALLOC]  t = 720 min
+  • sector 1:  ROS =    56.2  ->  weight = 0.398
+  • sector 2:  ROS =    46.9  ->  weight = 0.333
+  • sector 3:  ROS =    23.7  ->  weight = 0.168
+  • sector 4:  ROS =    14.3  ->  weight = 0.102
+  Ground-crew ranking  => [1, 2, 3, 4]
+simulating in place
+  → selected [-535.99137339 2455.71047099] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+  → selected [ 907.95058382 2195.42671236] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+
+[ROS-ALLOC]  t = 840 min
+  • sector 1:  ROS =    12.1  ->  weight = 0.175
+  • sector 2:  ROS =    27.2  ->  weight = 0.394
+  • sector 3:  ROS =    23.8  ->  weight = 0.345
+  • sector 4:  ROS =     6.0  ->  weight = 0.087
+  Ground-crew ranking  => [2, 3, 1, 4]
+simulating in place
+[START] GC#02 using ANCHOR (unspecified source) → start (451, 300) on boundary 3
+Start:  (451, 300)
+Finish:  (693, 350)
+[GC#02] WARNING: fire intercept at (433, 298) (burn_pen>0) – truncating path at idx 19.
+[GC#02] fire-line length 20 cells (169.2 min; ABORTED EARLY)
+
+— after _mark_anchor_completed(bdy=3, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=4, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=True  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_uncompleted(bdy=4, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  — <none>
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+  → selected [-1138.8485073  -5144.03934553] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[DEBUG] GC#01  attempting re-plan… remaining path = 370 cells
+[DEBUG] GC#01 start@(617, 505)  raw_arr=inf  now=853.0  mtt=nan  within_buffer=False
+[START] GC#01 using NEW (buffered by planner) → start (617, 505) on boundary 5
+Start:  (617, 505)
+Finish:  (603, 401)
+[GC#01] WARNING: fire intercept at (600, 398) (burn_pen>0) – truncating path at idx 185.
+[GC#01] fire-line length 186 cells (597.6 min; ABORTED EARLY)
+[DEBUG] GC#01  new path accepted (length 186, ETA 597.6 min)
+  → selected [  226.38941838 -5055.34155795] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[DEBUG] GC#01  attempting re-plan… remaining path = 186 cells
+[DEBUG] GC#01 start@(619, 496)  raw_arr=inf  now=900.0  mtt=nan  within_buffer=False
+[START] GC#01 using NEW (buffered by planner) → start (619, 496) on boundary 5
+Start:  (619, 496)
+Finish:  (603, 401)
+[GC#01] WARNING: fire intercept at (600, 400) (burn_pen>0) – truncating path at idx 158.
+[GC#01] fire-line length 159 cells (493.9 min; ABORTED EARLY)
+[DEBUG] GC#01  new path accepted (length 159, ETA 493.9 min)
+  → selected [ -224.09591223 -5231.48491158] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[DEBUG] GC#01  attempting re-plan… remaining path = 159 cells
+[DEBUG] GC#01 start@(620, 484)  raw_arr=inf  now=955.0  mtt=nan  within_buffer=False
+[START] GC#01 using NEW (buffered by planner) → start (620, 484) on boundary 5
+Start:  (620, 484)
+Finish:  (603, 401)
+[GC#01] WARNING: fire intercept at (600, 401) (burn_pen>0) – truncating path at idx 154.
+[GC#01] fire-line length 155 cells (423.0 min; ABORTED EARLY)
+[DEBUG] GC#01  new path accepted (length 155, ETA 423.0 min)
+
+[ROS-ALLOC]  t = 960 min
+  • sector 1:  ROS =     5.7  ->  weight = 0.272
+  • sector 2:  ROS =     5.7  ->  weight = 0.273
+  • sector 3:  ROS =     6.9  ->  weight = 0.330
+  • sector 4:  ROS =     2.6  ->  weight = 0.125
+  Ground-crew ranking  => [3, 2, 1, 4]
+simulating in place
+  → selected [-2185.10945331  3453.26269809] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+[GC#02] stopped early (fire intercept) – sector 3 NOT contained; awaiting reassignment.
+  → selected [-3256.9369141   3575.26276647] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+
+[ROS-ALLOC]  t = 1080 min
+  • sector 1:  ROS =    24.7  ->  weight = 0.459
+  • sector 2:  ROS =    12.1  ->  weight = 0.224
+  • sector 3:  ROS =    13.5  ->  weight = 0.252
+  • sector 4:  ROS =     3.5  ->  weight = 0.065
+  Ground-crew ranking  => [1, 3, 2, 4]
+simulating in place
+
+— after _record_anchor(bdy=1, role=start, cell=(342, 552), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish — <none>
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=2, role=finish, cell=(238, 366), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 1: start@bdy1 (342, 552)   finish@bdy2 (238, 366)
+[GC#02] → sector 1  start (342, 552)  finish (238, 366)
+  → selected [-1409.66904421  3430.78595195] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [-1607.26703079  3907.82969104] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+  → selected [-1873.95921421  4551.68157725] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+
+[ROS-ALLOC]  t = 1200 min
+  • sector 1:  ROS =    31.4  ->  weight = 0.405
+  • sector 2:  ROS =     8.7  ->  weight = 0.112
+  • sector 3:  ROS =    23.5  ->  weight = 0.303
+  • sector 4:  ROS =    14.0  ->  weight = 0.180
+  Ground-crew ranking  => [1, 3, 4, 2]
+simulating in place
+  → selected [-4509.65751643 -4121.42217044] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+  → selected [-7180.75339771  -298.2444586 ] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+
+[ROS-ALLOC]  t = 1320 min
+  • sector 1:  ROS =    32.0  ->  weight = 0.436
+  • sector 2:  ROS =    22.2  ->  weight = 0.302
+  • sector 3:  ROS =    16.8  ->  weight = 0.229
+  • sector 4:  ROS =     2.4  ->  weight = 0.033
+  Ground-crew ranking  => [1, 2, 3, 4]
+simulating in place
+  → selected [-7364.98214533  -954.78354643] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+[START] GC#02 using ANCHOR (unspecified source) → start (342, 552) on boundary 1
+Start:  (342, 552)
+Finish:  (238, 366)
+[GC#02] WARNING: fire intercept at (238, 367) (burn_pen>0) – truncating path at idx 1220.
+[GC#02] fire-line length 1221 cells (853.3 min; ABORTED EARLY)
+
+— after _mark_anchor_completed(bdy=1, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=True  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_uncompleted(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=600.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-7718.98880507  -321.744324  ] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+[GC#01] stopped early (fire intercept) – sector 4 NOT contained; awaiting reassignment.
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-8034.74291029  -335.53044596] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+
+[ROS-ALLOC]  t = 1440 min
+  • sector 1:  ROS =    22.0  ->  weight = 0.248
+  • sector 2:  ROS =    19.2  ->  weight = 0.217
+  • sector 3:  ROS =    30.2  ->  weight = 0.340
+  • sector 4:  ROS =    17.3  ->  weight = 0.195
+  Ground-crew ranking  => [3, 1, 2, 4]
+simulating in place
+
+— after _record_anchor(bdy=3, role=start, cell=(451, 300), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=1440.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=600.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=4, role=finish, cell=(693, 350), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=1440.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 3: start@bdy3 (451, 300)   finish@bdy4 (693, 350)
+[GC#01] → sector 3  start (451, 300)  finish (693, 350)
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-8498.25634228   386.75180534] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-4840.41739695  5303.32847868] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+  → selected [-9485.63436539   429.86166084] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+
+[ROS-ALLOC]  t = 1560 min
+  • sector 1:  ROS =    13.4  ->  weight = 0.298
+  • sector 2:  ROS =    15.8  ->  weight = 0.350
+  • sector 3:  ROS =    15.7  ->  weight = 0.349
+  • sector 4:  ROS =     0.1  ->  weight = 0.003
+  Ground-crew ranking  => [2, 3, 1, 4]
+simulating in place
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+[START] GC#01 using ANCHOR (unspecified source) → start (451, 300) on boundary 3
+Start:  (451, 300)
+Finish:  (693, 350)
+[GC#01] WARNING: fire intercept at (445, 296) (burn_pen>0) – truncating path at idx 9.
+[GC#01] fire-line length 10 cells (0.0 min; ABORTED EARLY)
+
+— after _mark_anchor_completed(bdy=3, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=1440.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=4, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=1440.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=True  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_uncompleted(bdy=4, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=1440.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+[GC#01] stopped early (fire intercept) – sector 3 NOT contained; awaiting reassignment.
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-9335.02016051 -2929.40257373] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+  → selected [-5687.26752923 -6196.51930127] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+
+[ROS-ALLOC]  t = 1680 min
+  • sector 1:  ROS =     7.8  ->  weight = 0.258
+  • sector 2:  ROS =    12.2  ->  weight = 0.401
+  • sector 3:  ROS =    10.4  ->  weight = 0.341
+  • sector 4:  ROS =     0.0  ->  weight = 0.000
+  Ground-crew ranking  => [2, 3, 1, 4]
+simulating in place
+
+— after _record_anchor(bdy=3, role=start, cell=(451, 300), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(238, 366)  t=1080.0  completed=False  world=(-3940.0, 6180.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=2, role=finish, cell=(140, 310), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 2: start@bdy3 (451, 300)   finish@bdy2 (140, 310)
+[GC#01] → sector 2  start (451, 300)  finish (140, 310)
+[START] GC#01 using ANCHOR (unspecified source) → start (451, 300) on boundary 3
+Start:  (451, 300)
+Finish:  (140, 310)
+[GC#01] WARNING: fire intercept at (446, 295) (burn_pen>0) – truncating path at idx 9.
+[GC#01] fire-line length 10 cells (0.0 min; ABORTED EARLY)
+
+— after _mark_anchor_completed(bdy=3, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=True  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_uncompleted(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=480.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+[GC#01] stopped early (fire intercept) – sector 2 NOT contained; awaiting reassignment.
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-7506.5890415  3925.7735744] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-10157.90224257   1353.46237869] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+  → selected [-7790.3544914  4073.4925177] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 2 – notifying ground crews
+
+[ROS-ALLOC]  t = 1800 min
+  • sector 1:  ROS =     7.4  ->  weight = 0.086
+  • sector 2:  ROS =     9.9  ->  weight = 0.113
+  • sector 3:  ROS =    27.3  ->  weight = 0.314
+  • sector 4:  ROS =    42.3  ->  weight = 0.487
+  Ground-crew ranking  => [4, 3, 2, 1]
+simulating in place
+
+— after _record_anchor(bdy=5, role=start, cell=(485, 509), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(693, 350)  t=1440.0  completed=False  world=(-4420.0, -7469.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=False  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=4, role=finish, cell=(779, 300), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=False  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=False  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 4: start@bdy5 (485, 509)   finish@bdy4 (779, 300)
+[GC#01] → sector 4  start (485, 509)  finish (779, 300)
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-3532.97386972 -6780.87732608] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-4150.73887176 -7967.59285367] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+
+[ROS-ALLOC]  t = 1920 min
+  • sector 1:  ROS =     2.9  ->  weight = 0.104
+  • sector 2:  ROS =     6.0  ->  weight = 0.216
+  • sector 3:  ROS =     6.4  ->  weight = 0.230
+  • sector 4:  ROS =    12.5  ->  weight = 0.450
+  Ground-crew ranking  => [4, 3, 2, 1]
+simulating in place
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [-2551.68669715 -8093.25704862] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [ -894.39352271 -6816.0196659 ] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[START] GC#01 using ANCHOR (unspecified source) → start (485, 509) on boundary 5
+Start:  (485, 509)
+Finish:  (779, 300)
+[GC#01] fire-line length 704 cells (473.9 min; full plan)
+
+— after _mark_anchor_completed(bdy=5, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=False  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=4, role=finish, by=<groundcrew.GroundCrewAgent object at 0x000001765114BC90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=1680.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+  → selected [ -935.07257321 -7125.00773102] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[DEBUG] GC#01  attempting re-plan… remaining path = 704 cells
+[DEBUG] GC#01 start@(638, 473)  raw_arr=inf  now=2034.0  mtt=nan  within_buffer=False
+[START] GC#01 using NEW (buffered by planner) → start (638, 473) on boundary 5
+Start:  (638, 473)
+Finish:  (779, 300)
+[GC#01] fire-line length 477 cells (441.5 min; full plan)
+[DEBUG] GC#01  new path accepted (length 477, ETA 441.5 min)
+
+[ROS-ALLOC]  t = 2040 min
+  • sector 1:  ROS =     9.7  ->  weight = 0.303
+  • sector 2:  ROS =     4.6  ->  weight = 0.142
+  • sector 3:  ROS =     3.9  ->  weight = 0.121
+  • sector 4:  ROS =    13.9  ->  weight = 0.434
+  Ground-crew ranking  => [4, 1, 2, 3]
+simulating in place
+  → selected [ -979.51087795 -7462.55016707] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[DEBUG] GC#01  attempting re-plan… remaining path = 477 cells
+[DEBUG] GC#01 start@(647, 487)  raw_arr=inf  now=2080.0  mtt=nan  within_buffer=False
+[START] GC#01 using NEW (buffered by planner) → start (647, 487) on boundary 5
+Start:  (647, 487)
+Finish:  (779, 300)
+[GC#01] fire-line length 450 cells (387.7 min; full plan)
+[DEBUG] GC#01  new path accepted (length 450, ETA 387.7 min)
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [-3517.67547648 -8488.97974441] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[DEBUG] GC#01  attempting re-plan… remaining path = 450 cells
+[DEBUG] GC#01 start@(670, 496)  raw_arr=inf  now=2127.0  mtt=nan  within_buffer=False
+[START] GC#01 using NEW (buffered by planner) → start (670, 496) on boundary 5
+Start:  (670, 496)
+Finish:  (779, 300)
+[GC#01] fire-line length 424 cells (329.1 min; full plan)
+[DEBUG] GC#01  new path accepted (length 424, ETA 329.1 min)
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+
+[ROS-ALLOC]  t = 2160 min
+  • sector 1:  ROS =    10.0  ->  weight = 0.227
+  • sector 2:  ROS =    13.9  ->  weight = 0.317
+  • sector 3:  ROS =    10.8  ->  weight = 0.244
+  • sector 4:  ROS =     9.4  ->  weight = 0.213
+  Ground-crew ranking  => [2, 3, 1, 4]
+simulating in place
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [-2423.95288067  7719.12106609] as drop point
+FLUSHED
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+[DEBUG] GC#02  attempting re-plan… remaining path = 1221 cells
+[DEBUG] GC#02 start@(210, 374)  raw_arr=inf  now=2174.0  mtt=nan  within_buffer=False
+[START] GC#02 using NEW (buffered by planner) → start (210, 374) on boundary 1
+Start:  (210, 374)
+Finish:  (238, 366)
+[GC#02] WARNING: fire intercept at (238, 366) (burn_pen>0) – truncating path at idx 53.
+[GC#02] fire-line length 54 cells (9.4 min; ABORTED EARLY)
+[DEBUG] GC#02  new path accepted (length 54, ETA 9.4 min)
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+[GC#02] stopped early (fire intercept) – sector 1 NOT contained; awaiting reassignment.
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [-3158.95893363  7653.9453275 ] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [2427.45878033 7698.57486795] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+
+[ROS-ALLOC]  t = 2280 min
+  • sector 1:  ROS =     3.1  ->  weight = 0.252
+  • sector 2:  ROS =     3.5  ->  weight = 0.282
+  • sector 3:  ROS =     2.6  ->  weight = 0.214
+  • sector 4:  ROS =     3.1  ->  weight = 0.252
+  Ground-crew ranking  => [2, 4, 1, 3]
+simulating in place
+
+— after _record_anchor(bdy=3, role=start, cell=(451, 300), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(140, 310)  t=1680.0  completed=False  world=(-5620.0, 9120.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=2, role=finish, cell=(97, 285), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(97, 285)  t=2280.0  completed=False  world=(-6370.0, 10410.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 2: start@bdy3 (451, 300)   finish@bdy2 (97, 285)
+[GC#02] → sector 2  start (451, 300)  finish (97, 285)
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [-12166.04063927  -2682.76102212] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [-11082.88578639  -3480.5024887 ] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+
+[ROS-ALLOC]  t = 2400 min
+  • sector 1:  ROS =     3.3  ->  weight = 0.290
+  • sector 2:  ROS =     3.0  ->  weight = 0.257
+  • sector 3:  ROS =     1.1  ->  weight = 0.099
+  • sector 4:  ROS =     4.1  ->  weight = 0.354
+  Ground-crew ranking  => [4, 1, 2, 3]
+simulating in place
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+  → selected [ -306.78155821 -7125.29756128] as drop point
+FLUSHED
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[DEBUG] GC#01  attempting re-plan… remaining path = 424 cells
+[DEBUG] GC#01 start@(787, 317)  raw_arr=inf  now=2415.0  mtt=nan  within_buffer=False
+[START] GC#01 using NEW (buffered by planner) → start (787, 317) on boundary 5
+Start:  (787, 317)
+Finish:  (779, 300)
+[GC#01] fire-line length 28 cells (28.3 min; full plan)
+[DEBUG] GC#01  new path accepted (length 28, ETA 28.3 min)
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Using multi-phase propagation with wind schedule.
+[GC#01] updated fire after clearing batch
+Sector contained  4
+
+— after _mark_anchor_completed(bdy=5, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(97, 285)  t=2280.0  completed=False  world=(-6370.0, 10410.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=4, role=finish, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(97, 285)  t=2280.0  completed=False  world=(-6370.0, 10410.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[GC#01] Sector 4 contained → Standby
+  → selected [-1098.38955394 -8365.52335911] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+[START] GC#02 using ANCHOR (unspecified source) → start (451, 300) on boundary 3
+Start:  (451, 300)
+Finish:  (97, 285)
+[GC#02] WARNING: fire intercept at (447, 294) (burn_pen>0) – truncating path at idx 9.
+[GC#02] fire-line length 10 cells (0.0 min; ABORTED EARLY)
+
+— after _mark_anchor_completed(bdy=3, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(97, 285)  t=2280.0  completed=False  world=(-6370.0, 10410.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(97, 285)  t=2280.0  completed=True  world=(-6370.0, 10410.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_uncompleted(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=1080.0  completed=True  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(97, 285)  t=2280.0  completed=False  world=(-6370.0, 10410.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+[GC#02] stopped early (fire intercept) – sector 2 NOT contained; awaiting reassignment.
+  → selected [ -328.27670662 -7617.61740075] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 4 – notifying ground crews
+
+[ROS-ALLOC]  t = 2520 min
+  • sector 1:  ROS =     3.1  ->  weight = 0.460
+  • sector 2:  ROS =     2.7  ->  weight = 0.401
+  • sector 3:  ROS =     1.0  ->  weight = 0.139
+  Ground-crew ranking  => [1, 2, 3]
+simulating in place
+
+— after _record_anchor(bdy=1, role=start, cell=(342, 552), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2520.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(97, 285)  t=2280.0  completed=False  world=(-6370.0, 10410.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=2, role=finish, cell=(91, 282), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2520.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(91, 282)  t=2520.0  completed=False  world=(-6460.0, 10590.5)
+b03 start  rc=(451, 300)  t=2280.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 1: start@bdy1 (342, 552)   finish@bdy2 (91, 282)
+[GC#01] → sector 1  start (342, 552)  finish (91, 282)
+
+— after _record_anchor(bdy=3, role=start, cell=(451, 300), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2520.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(91, 282)  t=2520.0  completed=False  world=(-6460.0, 10590.5)
+b03 start  rc=(451, 300)  t=2520.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=2, role=finish, cell=(91, 282), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2520.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(91, 282)  t=2520.0  completed=False  world=(-6460.0, 10590.5)
+b03 start  rc=(451, 300)  t=2520.0  completed=False  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 2: start@bdy3 (451, 300)   finish@bdy2 (91, 282)
+[GC#02] → sector 2  start (451, 300)  finish (91, 282)
+[START] GC#02 using ANCHOR (unspecified source) → start (451, 300) on boundary 3
+Start:  (451, 300)
+Finish:  (91, 282)
+[GC#02] WARNING: fire intercept at (447, 293) (burn_pen>0) – truncating path at idx 10.
+[GC#02] fire-line length 11 cells (0.0 min; ABORTED EARLY)
+
+— after _mark_anchor_completed(bdy=3, role=start, by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2520.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(91, 282)  t=2520.0  completed=False  world=(-6460.0, 10590.5)
+b03 start  rc=(451, 300)  t=2520.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_completed(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2520.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(91, 282)  t=2520.0  completed=True  world=(-6460.0, 10590.5)
+b03 start  rc=(451, 300)  t=2520.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _mark_anchor_uncompleted(bdy=2, role=finish, by=<groundcrew.GroundCrewAgent object at 0x0000017651148D90>) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2520.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(91, 282)  t=2520.0  completed=False  world=(-6460.0, 10590.5)
+b03 start  rc=(451, 300)  t=2520.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+Using multi-phase propagation with wind schedule.
+[GC#02] updated fire after clearing batch
+[GC#02] stopped early (fire intercept) – sector 2 NOT contained; awaiting reassignment.
+  → selected [-12382.08499397  -2730.65690246] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+  → selected [-12740.82442344  -1662.52660898] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+
+[ROS-ALLOC]  t = 2640 min
+  • sector 1:  ROS =     3.6  ->  weight = 0.453
+  • sector 2:  ROS =     3.1  ->  weight = 0.399
+  • sector 3:  ROS =     1.2  ->  weight = 0.148
+  Ground-crew ranking  => [1, 2, 3]
+simulating in place
+
+— after _record_anchor(bdy=1, role=start, cell=(342, 552), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2640.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(91, 282)  t=2520.0  completed=False  world=(-6460.0, 10590.5)
+b03 start  rc=(451, 300)  t=2520.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+
+— after _record_anchor(bdy=2, role=finish, cell=(87, 279), by=None) —
+
+=== boundary_anchors (NOW) ===
+b00 start  rc=(451, 547)  t=240.0  completed=True  world=(1490.0, -209.5)
+b00 finish — <none>
+b01 start  rc=(342, 552)  t=2640.0  completed=False  world=(1640.0, 3060.5)
+b01 finish rc=(342, 552)  t=240.0  completed=True  world=(1640.0, 3060.5)
+b02 start  — <none>
+b02 finish rc=(87, 279)  t=2640.0  completed=False  world=(-6550.0, 10710.5)
+b03 start  rc=(451, 300)  t=2520.0  completed=True  world=(-5920.0, -209.5)
+b03 finish — <none>
+b04 start  — <none>
+b04 finish rc=(779, 300)  t=1800.0  completed=True  world=(-5920.0, -10049.5)
+b05 start  rc=(485, 509)  t=1800.0  completed=True  world=(350.0, -1229.5)
+b05 finish rc=(485, 509)  t=240.0  completed=True  world=(350.0, -1229.5)
+=== end ===
+
+— end dump —
+
+[DEBUG] sector 1: start@bdy1 (342, 552)   finish@bdy2 (87, 279)
+[GC#02] → sector 1  start (342, 552)  finish (87, 279)
+  → selected [3322.04428405 8023.5644643 ] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+  → selected [4112.30572232 7905.56812593] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+  → selected [1836.69165925 8277.75498672] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 1 – notifying ground crews
+
+[ROS-ALLOC]  t = 2760 min
+  • sector 1:  ROS =     6.4  ->  weight = 0.427
+  • sector 2:  ROS =     6.2  ->  weight = 0.414
+  • sector 3:  ROS =     2.4  ->  weight = 0.159
+  Ground-crew ranking  => [1, 2, 3]
+simulating in place
+  → selected [-12768.47697188  -1666.16713605] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+  → selected [-11030.0255259   -3463.83571258] as drop point
+Using multi-phase propagation with wind schedule.
+DROP RAN
+[DEBUG] AT#00  finished drop in sector 3 – notifying ground crews
+[SIM] < 1 decision slice left – terminating.
+[SIM] Finished at t=2880 min – final fire-score = 190500.00  final buildings-destroyed = 1281  final buildings-breakdown = {"11":1155,"12":51,"13":62,"21":12,"22":1}
+[0m
