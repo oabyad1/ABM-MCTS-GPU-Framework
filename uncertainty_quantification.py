@@ -1,4 +1,3 @@
-
 """
 Main purpose of this script is to visualize the uncertainty
 
@@ -27,6 +26,23 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg", force=True)
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker  # <-- ADDED (for disabling 1e-5 style)
+
+# ───────────────────────────────────────────────
+# GLOBAL PLOT FONT SETTINGS (for publication PDFs)
+# ───────────────────────────────────────────────
+# This globally increases:
+# - axis labels, tick labels, legends, titles, suptitles
+plt.rcParams.update({
+    "font.size": 13,              # base font size
+    "axes.titlesize": 15,         # subplot titles
+    "axes.labelsize": 14,         # x and y labels
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 12,
+    "figure.titlesize": 16,
+    "axes.formatter.useoffset": False,  # helps reduce scientific offset usage
+})
 
 # ───────────────────────────────────────────────
 # CONFIG — edit these
@@ -42,7 +58,7 @@ CASES = [
          TIF_PATH="cali_test_big_enhanced.tif",
          SIM_MIN=3000),
 
-    # Examples you can enable:
+
     # dict(name="Camp Medium Uncertainty",
     #      SCHEDULE_CSV="wind_schedule_camp_med.csv",
     #      TIF_PATH="camp_fire_three_enhanced.tif",
@@ -69,7 +85,7 @@ RUNS_PER_CASE = 1000     # number of stochastic truth fires per case
 BASE_SEED     = None   # set an int for reproducibility, or None for time-based
 MAX_ITER      = 250
 TOL           = 1e-3
-OUT_ROOT      = "final_out_uncertainty_esper"
+OUT_ROOT      = "final_out_uncertainty_camp_FIXED"
 INCLUDE_GALLERY = False   # galleries for 40 runs can be large; toggle as needed
 
 
@@ -268,32 +284,6 @@ def plot_compare_cases_means(all_metrics, metric, out_dir):
     fig.savefig(out_dir / f"compare_cases_means_{metric}.png", dpi=220)
     plt.close(fig)
 
-# def _plot_hist_with_normal(ax, data, label, bins="auto"):
-#     """Plot a density histogram and overlay a Normal(mu, sigma) PDF fit."""
-#     x = np.asarray(data, dtype=float)
-#     x = x[np.isfinite(x)]
-#     if x.size == 0:
-#         ax.text(0.5, 0.5, f"No data for {label}", ha="center", va="center", transform=ax.transAxes)
-#         return
-#     mu = float(np.mean(x))
-#     sd = float(np.std(x, ddof=1)) if x.size > 1 else 0.0
-#
-#     # Histogram as density
-#     ax.hist(x, bins=bins, density=True, alpha=0.35, label=f"{label} Histogram")
-#
-#     # Overlay Normal if sd>0
-#     if sd > 0:
-#         # Generate support (truncate below zero)
-#         xs = np.linspace(max(0, mu - 4 * sd), mu + 4 * sd, 400)
-#
-#         # Standard Normal PDF
-#         pdf = (1.0 / (sd * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((xs - mu) / sd) ** 2)
-#
-#         # Explicitly zero out anything below 0 (safety in case of rounding)
-#         pdf = np.where(xs < 0, 0.0, pdf)
-#
-#         ax.plot(xs, pdf, linewidth=2, label=f"{label} ~ N({mu:.1f}, {sd:.1f}²)")
-
 def _plot_hist_with_normal(ax, data, label, bins="auto", color=None):
     """Plot a density histogram with matching Normal(mu, sigma) PDF overlay."""
     x = np.asarray(data, dtype=float)
@@ -317,7 +307,6 @@ def _plot_hist_with_normal(ax, data, label, bins="auto", color=None):
         pdf = (1.0 / (sd * np.sqrt(2 * np.pi))) * np.exp(-0.5 * ((xs - mu) / sd) ** 2)
         pdf = np.where(xs < 0, 0.0, pdf)
         ax.plot(xs, pdf, color=color, linewidth=2.0, label=f"{label} ~ N({mu:.1f}, {sd:.1f}²)")
-
 
 def _ecdf_vals(x):
     x = np.asarray(x, dtype=float)
@@ -390,7 +379,6 @@ def compare_two_cases_dashboard(caseA, caseB, df_all, out_dir, thresholds_area=N
         pooled_b = np.concatenate([gA["buildings"].values, gB["buildings"].values])
         pooled_b = pooled_b[np.isfinite(pooled_b)]
         if pooled_b.size:
-
             qs = np.quantile(pooled_b, [0.5, 0.7, 0.8, 0.9, 0.95])
             thresholds_bldg = sorted({int(round(v)) for v in qs})
         else:
@@ -426,26 +414,28 @@ def compare_two_cases_dashboard(caseA, caseB, df_all, out_dir, thresholds_area=N
 
     colors = ["#1F4E79", "#D95F02"]
 
-
     fig_pdf_b, ax_pdf_b = plt.subplots(figsize=(10.0, 6.0))
 
     _plot_hist_with_normal(ax_pdf_b, gA["buildings"].values, caseA, bins="auto", color=colors[0])
     _plot_hist_with_normal(ax_pdf_b, gB["buildings"].values, caseB, bins="auto", color=colors[1])
 
-    ax_pdf_b.set_xlabel("Structures Destroyed", fontsize=11)
-    ax_pdf_b.set_ylabel("Probability Density", fontsize=11)
-    # ax_pdf_b.set_title(f"Structures Distribution — {caseA} vs {caseB}", fontsize=12)
-    ax_pdf_b.tick_params(axis="both", labelsize=10)
+    # Use global rcParams sizes (no explicit fontsize overrides)
+    ax_pdf_b.set_xlabel("Structures Destroyed")
+    ax_pdf_b.set_ylabel("Probability Density")
+
+    # # Kill annoying scientific notation/offset text like 1e−5
+    # ax_pdf_b.ticklabel_format(style="plain", axis="both", useOffset=False)
+    # ax_pdf_b.yaxis.set_major_formatter(mticker.ScalarFormatter(useOffset=False))
+    # ax_pdf_b.yaxis.get_major_formatter().set_scientific(False)
 
     # Add faint grid markers
     ax_pdf_b.grid(True, which='major', linestyle='--', linewidth=0.6, alpha=0.4)
     ax_pdf_b.grid(True, which='minor', linestyle=':', linewidth=0.4, alpha=0.3)
     ax_pdf_b.minorticks_on()
 
-    # Legend inside upper right corner, compact
+    # Legend: let rcParams control fontsize (no fontsize=...)
     ax_pdf_b.legend(
         loc="upper right",
-        fontsize=9.5,
         frameon=True,
         framealpha=0.8,
         borderpad=0.8
@@ -461,19 +451,22 @@ def compare_two_cases_dashboard(caseA, caseB, df_all, out_dir, thresholds_area=N
     _plot_hist_with_normal(ax_pdf_a, gA["area_cells"].values, caseA, bins="auto", color=colors[0])
     _plot_hist_with_normal(ax_pdf_a, gB["area_cells"].values, caseB, bins="auto", color=colors[1])
 
-    ax_pdf_a.set_xlabel("Area Burned (# of cells)", fontsize=11)
-    ax_pdf_a.set_ylabel("Probability Density", fontsize=11)
-    # ax_pdf_a.set_title(f"Area Distribution — {caseA} vs {caseB}", fontsize=12)
-    ax_pdf_a.tick_params(axis="both", labelsize=10)
+    # Use global rcParams sizes (no explicit fontsize overrides)
+    ax_pdf_a.set_xlabel("Area Burned (# of cells)")
+    ax_pdf_a.set_ylabel("Probability Density")
 
+    # Kill annoying scientific notation/offset text like 1e−5
+    # ax_pdf_a.ticklabel_format(style="plain", axis="both", useOffset=False)
+    # ax_pdf_a.yaxis.set_major_formatter(mticker.ScalarFormatter(useOffset=False))
+    # ax_pdf_a.yaxis.get_major_formatter().set_scientific(False)
 
     ax_pdf_a.grid(True, which='major', linestyle='--', linewidth=0.6, alpha=0.4)
     ax_pdf_a.grid(True, which='minor', linestyle=':', linewidth=0.4, alpha=0.3)
     ax_pdf_a.minorticks_on()
 
+    # Legend: let rcParams control fontsize (no fontsize=...)
     ax_pdf_a.legend(
         loc="upper right",
-        fontsize=9.5,
         frameon=True,
         framealpha=0.8,
         borderpad=0.8

@@ -27,7 +27,7 @@ CSV_PATH = Path("summary_depth_camp_high_final.csv")
 # CSV_PATH = Path("summary_depth_marshall_high_final.csv")
 # CSV_PATH = Path("summary_depth_marshall_med_final.csv")
 
-OUTDIR = Path("plots_final_depth_camp_high")
+OUTDIR = Path("plots_final_depth_camp_high_violin")
 COMPOSITE_WEIGHTS = (1 / 3, 2 / 3)  # (weight_area, weight_bldg), must sum to 1.0
 
 DEPTH_SHIFT = 3

@@ -28,7 +28,7 @@ if __name__ == "__main__":
     # Simulation parameters
     airtanker_counts = {
         "C130J": 0,
-        "FireHerc": 4,
+        "FireHerc": 1,
         "Scooper": 0,
         "AT802F": 0,
         "Dash8_400MRE": 0
@@ -54,14 +54,14 @@ if __name__ == "__main__":
     fire_spread_sim_time = 3000
     operational_delay=0
 
-    groundcrew_count = 1# spin up 3 ground-crew agents
+    groundcrew_count = 0# spin up 3 ground-crew agents
     groundcrew_speed = 30
 
     # Define the start time of the simulation, e.g., 10:00 AM
     start_time = datetime.datetime.strptime("00:00", "%H:%M")
-    wind_schedule = load_wind_schedule_from_csv_mean("wind_schedule_from_raws.csv")
+    wind_schedule = load_wind_schedule_from_csv_mean("wind_schedule_natural.csv")
 
-    wind_schedule = load_wind_schedule_from_csv_mean("wind_schedule_camp_four.csv")
+    wind_schedule = load_wind_schedule_from_csv_mean("wind_schedule_natural.csv")
 
     # print("wind_schedule", wind_schedule)
     # Define the case folder for saving outputs

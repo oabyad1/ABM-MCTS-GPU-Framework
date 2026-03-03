@@ -781,6 +781,15 @@ def rollout(sim_state, forecast_df, rollout_depth, duration=120, building_weight
         print("[Rollout] Building layer missing or baseline buildings = 0 → area-only.")
     print(f"[Rollout] Mixed ratio={mixed:.3f} → reward={reward:.3f}")
 
+    # ── fire-overlay hook (non-intrusive) ─────────────────────────────────────
+    _on_sample = getattr(rollout, "_on_sample", None)
+    if callable(_on_sample):
+        try:
+            _on_sample(current_state)
+        except Exception:
+            pass  # never crash the MCTS over a visualisation hook
+    # ─────────────────────────────────────────────────────────────────────────
+
     return reward
 
 

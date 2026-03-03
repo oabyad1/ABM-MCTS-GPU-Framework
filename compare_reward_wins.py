@@ -18,21 +18,21 @@ import matplotlib.pyplot as plt
 # ---------------------------------------------------------------------
 # Input CSVs
 
-
-CSV_FILES = {
-    "Esperanza (Low Uncertainty)": Path("summary_final_esper_med.csv"),
-    "Esperanza (High Uncertainty)": Path("summary_final_esper_high.csv"),
-}
+#
+# CSV_FILES = {
+#     "Esperanza (Low Uncertainty)": Path("summary_final_esper_med.csv"),
+#     "Esperanza (High Uncertainty)": Path("summary_final_esper_high.csv"),
+# }
 #
 # CSV_FILES = {
 #     "Camp (Low Uncertainty)": Path("summary_final_camp_med.csv"),
 #     "Camp (High Uncertainty)": Path("summary_final_camp_high.csv"),
 # }
 
-# CSV_FILES = {
-#     "Marshall (Low Uncertainty)": Path("summary_final_marshall_med.csv"),
-#     "Marshall (High Uncertainty)": Path("summary_final_marshall_high.csv"),
-# }
+CSV_FILES = {
+    "Marshall (Low Uncertainty)": Path("summary_final_marshall_med.csv"),
+    "Marshall (High Uncertainty)": Path("summary_final_marshall_high.csv"),
+}
 
 
 # SCENARIO_COLORS = {
@@ -40,17 +40,17 @@ CSV_FILES = {
 #     "Camp (High Uncertainty)": "#D95F02",  }
 
 
-SCENARIO_COLORS = {
-    "Esperanza (Low Uncertainty)": "#1F4E79",
-    "Esperanza (High Uncertainty)": "#D95F02",  }
+# SCENARIO_COLORS = {
+#     "Esperanza (Low Uncertainty)": "#1F4E79",
+#     "Esperanza (High Uncertainty)": "#D95F02",  }
 
 
 colors = ["#1F4E79", "#D95F02"]
 
-# SCENARIO_COLORS = {
-#     "Marshall (Low Uncertainty)": "#1F4E79",  # greenish
-#     "Marshall (High Uncertainty)": "#D95F02",    # orange
-# }
+SCENARIO_COLORS = {
+    "Marshall (Low Uncertainty)": "#1F4E79",  # greenish
+    "Marshall (High Uncertainty)": "#D95F02",    # orange
+}
 # ---------------------------------------------------------------------
 
 
@@ -66,18 +66,18 @@ colors = ["#1F4E79", "#D95F02"]
 #     "Camp (Low Uncertainty)": {},                       # marshall med
 #     "Camp (High Uncertainty)": {},  # marshall high
 # }
-# EXCLUDE_RUNS = {
-#     "Marshall (Low Uncertainty)": {43,49,91,     92,93,94,95,96,97},                       # marshall med
-#     "Marshall (High Uncertainty)": {0,105,110,12,36,53,94,9,46, 91,92,93,95},  # marshall high
-# }
-
 EXCLUDE_RUNS = {
-    "Esperanza (Low Uncertainty)": {},                       # marshall med
-    "Esperanza (High Uncertainty)": {9},  # marshall high
+    "Marshall (Low Uncertainty)": {43,49,91,     92,93,94,95,96,97},                       # marshall med
+    "Marshall (High Uncertainty)": {0,105,110,12,36,53,94,9,46, 91,92,93,95},  # marshall high
 }
 
+# EXCLUDE_RUNS = {
+#     "Esperanza (Low Uncertainty)": {},                       # marshall med
+#     "Esperanza (High Uncertainty)": {9},  # marshall high
+# }
 
-OUTDIR = Path("plots_final_esper_wins")
+
+OUTDIR = Path("plots_final_marshall_wins_FIXED")
 OUTDIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -211,17 +211,40 @@ def plot_composite_wins(df_combined: pd.DataFrame, outpath: Path):
     ax.set_xticklabels(display_labels, rotation=25, ha="right")
 
     # --- Formatting ---
-    ax.set_ylabel("Number of Wins (Lowest Composite Score)")
+    AXIS_LABEL_SIZE = 12
+    TICK_LABEL_SIZE = 12
+    LEGEND_TEXT_SIZE = 12
+    LEGEND_TITLE_SIZE = 12
+
+    ax.set_ylabel(
+        "Number of Wins (Lowest Composite Score)",
+        fontsize=AXIS_LABEL_SIZE,
+    )
+
+    # Tick label sizes
+    ax.tick_params(axis="x", labelsize=TICK_LABEL_SIZE)
+    ax.tick_params(axis="y", labelsize=TICK_LABEL_SIZE)
+
     ax.grid(axis="y", linestyle=":", alpha=0.6)
     ax.margins(y=0.1)
 
     # --- Legend ABOVE chart ---
-    ax.legend(
+    # ax.legend(
+    #     title="Scenario",
+    #     loc="lower center",
+    #     bbox_to_anchor=(0.5, 1.02),
+    #     ncol=len(datasets),
+    #     frameon=False,
+    # )
+
+    legend = ax.legend(
         title="Scenario",
         loc="lower center",
         bbox_to_anchor=(0.5, 1.02),
         ncol=len(datasets),
         frameon=False,
+        fontsize=LEGEND_TEXT_SIZE,
+        title_fontsize=LEGEND_TITLE_SIZE,
     )
 
     fig.tight_layout()

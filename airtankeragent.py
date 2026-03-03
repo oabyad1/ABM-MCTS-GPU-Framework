@@ -764,6 +764,18 @@ class AirtankerAgent(mesa.Agent):
                 self.model.fire, trial_ang, t_drop, self.buffer_distance
             )
 
+            trial_mid, trial_drop_ang = get_point_angle(
+                self.model.fire,
+                trial_ang,
+                t_drop,
+                self.buffer_distance,
+                debug_plot=True,
+                debug_step_deg=5,
+                debug_label_every=15,
+                debug_save_path="hull_debug.png",
+
+            )
+
             if trial_mid is None:
                 self._skip_current_drop("no valid contour / drop-point")
                 print(f"  → no contour at angle {trial_ang:.1f}°")

@@ -82,6 +82,21 @@ import cupy as cp, time
 
 pn.extension("plotly", theme="dark", notifications=True)
 # truth_schedule = load_wind_schedule_from_csv("wind_schedule_natural.csv")
+from fire_sample_overlay import (
+    FireSampleCollector,
+    plot_truth_vs_sampled_fires,
+    plot_truth_and_samples_sidebyside,   # optional side-by-side view
+)
+import mcts as _mcts_module
+
+# Collector – gathers sampled fire grids during MCTS rollouts
+fire_sample_collector = FireSampleCollector(max_samples=60)
+# Wire the collector into the rollout function (no signature change needed)
+_mcts_module.rollout._on_sample = fire_sample_collector.add_sample
+
+# Panel to display the overlay figure
+fire_overlay_panel = pn.pane.Plotly(height=640, sizing_mode="stretch_width")
+
 
 
 # truth_schedule = load_wind_schedule_from_csv_mean("wind_schedule_from_raws.csv")
@@ -124,17 +139,17 @@ from wind_schedule_utils import (
 )
 
 # 1) background “climatology” (means)
-BACKGROUND_SCHED = load_wind_schedule_from_csv_mean("wind_schedule_camp.csv")
+BACKGROUND_SCHED = load_wind_schedule_from_csv_random("wind_schedule_esper_high.csv")
 _print_schedule(BACKGROUND_SCHED, title=f"⚑ background sched")
 set_background_schedule(BACKGROUND_SCHED)
 
 # 2) truth schedule (extreme, random, etc.)
 TRUTH_SEED  = 25
-# truth_schedule = load_wind_schedule_from_csv_sigma(
-#                     "wind_schedule_camp.csv",
-#                     sigma=3.0,
-#                     seed=TRUTH_SEED)
-truth_schedule = load_wind_schedule_from_csv_mean("wind_schedule_camp.csv")
+truth_schedule = load_wind_schedule_from_csv_sigma(
+                    "wind_schedule_esper_high.csv",
+                    sigma=0.5,
+                    seed=TRUTH_SEED)
+# truth_schedule = load_wind_schedule_from_csv_random("wind_schedule_marshall_high.csv")
 
 
 _print_schedule(truth_schedule, title=f"⚑ hard σ truth schedule")
@@ -1049,6 +1064,19 @@ def simulation_loop(model: WildfireModel):
 
                 on_iteration=on_mcts_iter,
             )
+            # ── save the truth-vs-samples overlay figure ──────────────────────
+            if len(fire_sample_collector) > 0:
+                out_dir = Path(model.case_folder) / "overlay_images"
+                out_dir.mkdir(exist_ok=True)
+                fname = str(out_dir / f"fire_overlay_t{int(model.time)}.png")
+                plot_truth_vs_sampled_fires(
+                    truth_model=model,
+                    collector=fire_sample_collector,
+                    current_time=model.time,
+                    save_path=fname,
+                )
+            fire_sample_collector.reset()
+            # ─────────────────────────────────────────────────────────────────
 
             # root, _ = mcts(
             #     clone,

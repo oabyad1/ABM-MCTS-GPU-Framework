@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 
 # -------- Settings (no CLI) --------
 CSV_PATH = Path("summary_final_esper_high.csv")
-OUTDIR = Path("plots_final_esper_high")
+OUTDIR = Path("plots_final_esper_high_test")
 
 #these are the weights assigned to the area and building rewards used within the MCTS
 COMPOSITE_WEIGHTS = (1/3, 2/3)  # (weight_area, weight_bldg), must sum to 1.0
@@ -262,7 +262,88 @@ def bar_with_error(values, errors, labels, ylabel, outpath: Path):
     fig.savefig(outpath, dpi=200, bbox_inches="tight")
     plt.close(fig)
 
+def violin_plot(df: pd.DataFrame, metric_col: str, outpath: Path, ylabel: str):
+    """
+    Violin plot of per-run values by strategy.
+    Uses per-run mean (run_uid, strategy) so each run counts once.
+    """
 
+    # Collapse to per-run values first
+    per_run = (
+        df.groupby(["run_uid", "strategy"], as_index=False)[metric_col].mean()
+    )
+
+    # Order strategies by mean metric (lower is better)
+    order = (
+        per_run.groupby("strategy")[metric_col].mean()
+              .sort_values(ascending=True)
+              .index.tolist()
+    )
+
+    data = [per_run.loc[per_run["strategy"] == s, metric_col].dropna().values for s in order]
+
+    fig, ax = plt.subplots(figsize=(11, 6))
+
+    vp = ax.violinplot(
+        data,
+        positions=np.arange(1, len(order) + 1),
+        showmeans=True,
+        showmedians=False,
+        showextrema=False,
+        widths=0.85,
+    )
+
+    rng = np.random.default_rng(0)
+
+    # Color violins AND scatter consistently
+    for i, (body, strat) in enumerate(zip(vp["bodies"], order), start=1):
+        cat = STRATEGY_CATEGORY.get(strat, "Baseline")
+        color = CATEGORY_COLORS.get(cat, "#999999")
+
+        # Violin styling
+        body.set_facecolor(color)
+        body.set_edgecolor("black")
+        body.set_alpha(0.65)
+        body.set_linewidth(0.6)
+
+        # Scatter overlay (matching color)
+        y = data[i - 1]
+        x = rng.normal(loc=i, scale=0.06, size=len(y))
+        ax.scatter(
+            x, y,
+            alpha=0.6,
+            s=30,
+            color=color,
+            edgecolors="black",
+            linewidths=0.2,
+        )
+
+    # Mean marker styling
+    if "cmeans" in vp:
+        vp["cmeans"].set_edgecolor("black")
+        vp["cmeans"].set_linewidth(1.2)
+
+    ax.set_xticks(np.arange(1, len(order) + 1))
+    ax.set_xticklabels(order, rotation=25, ha="right")
+    ax.set_ylabel(ylabel)
+
+    ax.grid(axis="y", linestyle=":", alpha=0.6)
+
+    # Legend above
+    from matplotlib.patches import Patch
+    handles = [Patch(color=c, label=k) for k, c in CATEGORY_COLORS.items()]
+    ax.legend(
+        handles=handles,
+        title="Category",
+        loc="lower center",
+        bbox_to_anchor=(0.5, 1.02),
+        ncol=len(CATEGORY_COLORS),
+        frameon=False,
+    )
+
+    fig.tight_layout()
+    fig.savefig(outpath, dpi=200, bbox_inches="tight")
+    plt.close(fig)
 
 
 def scatter_composite(df: pd.DataFrame, outpath: Path):
@@ -356,6 +437,9 @@ def main():
     print("\n=== Mean composite per run (lower is better) ===")
     print(per_run.to_string(index=False))
 
+
+    ### STANDARD ERROR#############
+
     # Per-strategy means & standard errors (ordered by composite)
     by_strat = (
         df.groupby("strategy")
@@ -396,6 +480,73 @@ def main():
         ylabel="Composite Reward",
         outpath=OUTDIR / "mean_composite.png",
     )
+
+    # --- Violin plots (Normalized) ---
+    violin_plot(
+        df,
+        metric_col="composite",
+        outpath=OUTDIR / "violin_composite.png",
+        ylabel="Composite (normalized)",
+    )
+
+    violin_plot(
+        df,
+        metric_col="norm_area",
+        outpath=OUTDIR / "violin_normalized_area.png",
+        ylabel="Normalized Area Burned",
+    )
+
+    violin_plot(
+        df,
+        metric_col="norm_bldg",
+        outpath=OUTDIR / "violin_normalized_buildings.png",
+        ylabel="Normalized Structures Destroyed",
+    )
+
+    # ### STANDARD Deviation#############
+    #
+    # # ------------------- STANDARD DEVIATION (Normalized metrics) -------------------
+    #
+    # by_strat = (
+    #     df.groupby("strategy")
+    #     .agg(
+    #         mean_norm_area=("norm_area", "mean"),
+    #         std_norm_area=("norm_area", "std"),
+    #         mean_norm_bldg=("norm_bldg", "mean"),
+    #         std_norm_bldg=("norm_bldg", "std"),
+    #         mean_composite=("composite", "mean"),
+    #         std_composite=("composite", "std"),
+    #     )
+    #     .loc[summary["strategy"]]  # align with composite order
+    # )
+    #
+    # labels = by_strat.index.tolist()
+    #
+    # # Plots (mean ± STD)
+    # bar_with_error(
+    #     by_strat["mean_norm_area"].values,
+    #     by_strat["std_norm_area"].values,
+    #     labels,
+    #     ylabel="Normalized Area Burned",
+    #     outpath=OUTDIR / "mean_normalized_area.png",
+    # )
+    #
+    # bar_with_error(
+    #     by_strat["mean_norm_bldg"].values,
+    #     by_strat["std_norm_bldg"].values,
+    #     labels,
+    #     ylabel="Normalized Structures Destroyed",
+    #     outpath=OUTDIR / "mean_normalized_buildings.png",
+    # )
+    #
+    # bar_with_error(
+    #     by_strat["mean_composite"].values,
+    #     by_strat["std_composite"].values,
+    #     labels,
+    #     ylabel="Composite Reward",
+    #     outpath=OUTDIR / "mean_composite.png",
+    # )
+
 
     scatter_composite(df, OUTDIR / "composite_per_run_scatter.png")
 
