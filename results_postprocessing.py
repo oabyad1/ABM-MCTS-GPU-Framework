@@ -20,19 +20,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # -------- Settings (no CLI) --------
-CSV_PATH = Path("summary_final_esper_high.csv")
-OUTDIR = Path("plots_final_esper_high_test")
+CSV_PATH = Path("summary_final_camp_high.csv")
+OUTDIR = Path("plots_final_camp_high_FIXED")
 
 #these are the weights assigned to the area and building rewards used within the MCTS
 COMPOSITE_WEIGHTS = (1/3, 2/3)  # (weight_area, weight_bldg), must sum to 1.0
 
 # Exclusions, select runs to exclude (excludes entire runs, regardless of seed)
-EXCLUDE_RUNS: set[int] = {9}   # esper high
+# EXCLUDE_RUNS: set[int] = {9}   # esper high
 # EXCLUDE_RUNS: set[int] = {43,49,91,     92,93,94,95,96,97}   # marshall med only up to 91 bd
 # EXCLUDE_RUNS: set[int] = {0,105,110,12,36,53,94,9,46, 91,92,93,95}   # marshall high  only up to 46 bd
 # Optional: exclude specific (run,seed) pairs if you ever need to
 
-# EXCLUDE_RUNS: set[int] = {}   # esper high
+EXCLUDE_RUNS: set[int] = {}
 
 EXCLUDE_RUN_UIDS: set[str] = set()  # e.g., {"15|42", "16|777"}
 
@@ -44,6 +44,31 @@ CATEGORY_COLORS = {
     "Structure–Driven": "#8172B2",      # purple
     "Wind–Driven": "#C44E52",           # red
 }
+
+# CATEGORY_COLORS = {
+#     "MCTS": "#00A6D6",                  # bright cyan-teal (pops)
+#     "Baseline": "#B0B0B0",              # muted gray (de-emphasize baseline)
+#     "Rate-of-Spread–Driven": "#2CA02C", # clean green
+#     "Structure–Driven": "#9467BD",      # purple
+#     "Wind–Driven": "#D62728",           # red
+# }
+
+# CATEGORY_COLORS = {
+#     "MCTS": "#003F8C",                  # strong royal blue (stands out)
+#     "Baseline": "#B3B3B3",              # neutral gray
+#     "Rate-of-Spread–Driven": "#2CA02C", # green
+#     "Structure–Driven": "#9467BD",      # purple
+#     "Wind–Driven": "#D62728",           # red
+# }
+
+# CATEGORY_COLORS = {
+#       "MCTS": "#0077B6",
+#     "Baseline": "#B0B0B0",              # muted gray (de-emphasize baseline)
+#     "Rate-of-Spread–Driven": "#2CA02C", # clean green
+#     "Structure–Driven": "#9467BD",      # purple
+#     "Wind–Driven": "#D62728",           # red
+# }
+
 # --- Strategy name mapping (CSV → Publication name) ---
 STRATEGY_NAME_MAP = {
     # MCTS
@@ -262,7 +287,7 @@ def bar_with_error(values, errors, labels, ylabel, outpath: Path):
     fig.savefig(outpath, dpi=200, bbox_inches="tight")
     plt.close(fig)
 
-def violin_plot(df: pd.DataFrame, metric_col: str, outpath: Path, ylabel: str):
+def violin_plot(df: pd.DataFrame, metric_col: str, outpath: Path, ylabel: str, base_fontsize: int = 12):
     """
     Violin plot of per-run values by strategy.
     Uses per-run mean (run_uid, strategy) so each run counts once.
@@ -300,13 +325,11 @@ def violin_plot(df: pd.DataFrame, metric_col: str, outpath: Path, ylabel: str):
         cat = STRATEGY_CATEGORY.get(strat, "Baseline")
         color = CATEGORY_COLORS.get(cat, "#999999")
 
-        # Violin styling
         body.set_facecolor(color)
         body.set_edgecolor("black")
         body.set_alpha(0.65)
         body.set_linewidth(0.6)
 
-        # Scatter overlay (matching color)
         y = data[i - 1]
         x = rng.normal(loc=i, scale=0.06, size=len(y))
         ax.scatter(
@@ -323,28 +346,39 @@ def violin_plot(df: pd.DataFrame, metric_col: str, outpath: Path, ylabel: str):
         vp["cmeans"].set_edgecolor("black")
         vp["cmeans"].set_linewidth(1.2)
 
+    # Axis formatting
     ax.set_xticks(np.arange(1, len(order) + 1))
-    ax.set_xticklabels(order, rotation=25, ha="right")
-    ax.set_ylabel(ylabel)
+    ax.set_xticklabels(order, rotation=25, ha="right", fontsize=base_fontsize)
+
+    ax.set_ylabel(ylabel, fontsize=base_fontsize + 1)
+
+    ax.tick_params(axis="y", labelsize=base_fontsize)
+
+    # Make y tick labels bold
+
+
+    ax.set_ylim(0, 1)
 
     ax.grid(axis="y", linestyle=":", alpha=0.6)
 
     # Legend above
     from matplotlib.patches import Patch
     handles = [Patch(color=c, label=k) for k, c in CATEGORY_COLORS.items()]
-    ax.legend(
+
+    legend = ax.legend(
         handles=handles,
-        title="Category",
         loc="lower center",
         bbox_to_anchor=(0.5, 1.02),
         ncol=len(CATEGORY_COLORS),
         frameon=False,
+        fontsize=base_fontsize,
     )
+
+
 
     fig.tight_layout()
     fig.savefig(outpath, dpi=200, bbox_inches="tight")
     plt.close(fig)
-
 
 def scatter_composite(df: pd.DataFrame, outpath: Path):
     # Order strategies by mean composite
@@ -486,7 +520,7 @@ def main():
         df,
         metric_col="composite",
         outpath=OUTDIR / "violin_composite.png",
-        ylabel="Composite (normalized)",
+        ylabel="Composite Normalized Reward",
     )
 
     violin_plot(
