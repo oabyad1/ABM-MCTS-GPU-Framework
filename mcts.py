@@ -26,12 +26,12 @@ from wind_schedule_utils import sample_future_schedule
 from groundcrew import GroundCrewAgent
 from airtankeragent import AirtankerAgent
 
-from forecast_provider import get_forecast
-from wind_schedule_utils import sample_schedule_from_forecast
+# from forecast_provider import get_forecast
+# from wind_schedule_utils import sample_schedule_from_forecast
 
 
 
-from surrogate_fire_model_CK2_multi_phase import SurrogateFireModelROS_CK2Multi
+# from surrogate_fire_model_CK2_multi_phase import SurrogateFireModelROS_CK2Multi
 from FIRE_MODEL_CUDA import SurrogateFireModelROS
 import hashlib, json, pathlib
 DUMP_SCHEDULES = False
