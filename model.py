@@ -24,7 +24,7 @@ from groundcrew import GroundCrewAgent
 # Import the surrogate fire model.
 # from surrogate_fire_model import SurrogateFireModel
 # from surrogate_fire_model_rothermal_mcts_ncw import SurrogateFireModelROS
-from surrogate_fire_model_CK2_multi_phase import SurrogateFireModelROS_CK2Multi
+# from surrogate_fire_model_CK2_multi_phase import SurrogateFireModelROS_CK2Multi
 from FIRE_MODEL_CUDA import SurrogateFireModelROS
 # from surrogate_fire_model_CK2_multi_phase_optimized import SurrogateFireModelROS_CK2Multi
 # Import our new plotting module.
