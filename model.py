@@ -19,7 +19,7 @@ from airtanker_agents.fireherc_agent import FireHercAgent
 # from airtanker_agents.CL415_agent import CL415Agent
 from airtanker_agents.at_802f_agent import AT802FAgent
 from airtanker_agents.Dash8_400MRE_agent import Dash8_400MREAgent
-from groundcrew import GroundCrewAgent
+# from groundcrew import GroundCrewAgent
 
 # Import the surrogate fire model.
 # from surrogate_fire_model import SurrogateFireModel
@@ -30,10 +30,10 @@ from FIRE_MODEL_CUDA import SurrogateFireModelROS
 # Import our new plotting module.
 import surrogate_plotting as plotting
 import matplotlib.colors as mcolors
-from higher_level_planner import GroundCrewPlanner
+# from higher_level_planner import GroundCrewPlanner
 from airtankeragent import AirtankerAgent
 
-from fireline_abm import compute_fireline_for_sector
+# from fireline_abm import compute_fireline_for_sector
 from collections import namedtuple
 Point = namedtuple("Point", ["x","y"])
 import matplotlib.pyplot as plt
